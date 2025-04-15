@@ -1,0 +1,22 @@
+model:
+  mel_dim: 201
+  hidden_dim: 128
+  attn_dim: 128
+  embedding_out_dim: 128
+  N_prenet: 2
+  N_conv: 2
+
+dataset_path: "./vctk_data/audio_samples"
+preprocessed_dataset_path: "./preprocessed_vctk_data"
+data_file_extension: ".flac"
+sample_rate: 16000
+sample_duration: 5.0 # files are forced to be of the same length for consistent comparison
+n_fft: 2048
+win_length: 1600
+hop_length: 400
+n_mels: 80
+batch_size: 64
+epochs: 20
+triplet_loss_margin: 0.3
+lr: 0.0003
+save_dir: "./checkpoints"
