@@ -6,6 +6,9 @@ model:
   N_prenet: 2
   N_conv: 2
 
+train_split: 0.7
+val_split: 0.15
+test_split: 0.15
 dataset_path: "./vctk_data/audio_samples"
 preprocessed_dataset_path: "./preprocessed_vctk_data"
 data_file_extension: ".flac"
