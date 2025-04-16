@@ -6,16 +6,37 @@ import yaml, argparse, time, torch
 from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from utils.audio_triplet_loader import AudioTripletLoader
 from models.speaker_encoder import SpeakerEncoder
 from utils.data_utils import AverageMeter
 
+def load_dataset(config):
+    full_dataset = AudioTripletLoader(config)
+    total_num_samples = len(full_dataset)
+
+    n_train = int(config['train_split'] * total_num_samples)
+    n_val = int(config['val_split'] * total_num_samples)
+    n_test = int(config['test_split'] * total_num_samples)
+
+    train_split, val_split, test_split = random_split(
+        full_dataset,
+        lengths=[n_train, n_val, n_test],
+        generator=torch.Generator().manual_seed(42)
+    )
+
+    batch_size = config['batch_size']
+
+    train_data = DataLoader(train_split, batch_size=batch_size, shuffle=True, num_workers=4)
+    val_data = DataLoader(val_split, batch_size=batch_size, shuffle=False, num_workers=2)
+    test_data = DataLoader(test_split, batch_size=batch_size, shuffle=False, num_workers=2)
+
+    return train_data, val_data, test_data
+
 def train(config):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    audioDataTriplets = AudioTripletLoader(config)
-    dataloader = DataLoader(audioDataTriplets, config["batch_size"], shuffle=True, num_workers=4)
+    train_data, val_data, test_data = load_dataset(config)
 
     model_config = config['model']
 
@@ -33,14 +54,16 @@ def train(config):
     loss_function = nn.TripletMarginLoss(margin=config['triplet_loss_margin'])
     optimizer = optim.Adam(speaker_encoder.parameters(), lr=config['lr'])
 
-    start_time = time.time()
-    loss_meter = AverageMeter()
-    iter_meter = AverageMeter()
+    best_val_loss = 0.0
 
     for epoch in range(config['epochs']):
+        print(f"\nEpoch {epoch}/{config['epochs']}")
+        start_time = time.time()
+
+        # Training
         speaker_encoder.train()
-        loss = 0.0
-        for anchor_sample, positive_sample, negative_sample in tqdm(dataloader):
+        train_loss_meter = AverageMeter()
+        for anchor_sample, positive_sample, negative_sample in tqdm(train_data):
             anchor_sample = anchor_sample.to(device)
             positive_sample = positive_sample.to(device)
             negative_sample = negative_sample.to(device)
@@ -50,22 +73,36 @@ def train(config):
             negative_embedding = speaker_encoder(negative_sample)
 
             loss = loss_function(anchor_embedding, positive_embedding, negative_embedding)
+            
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            loss += loss.item()
+            train_loss_meter.update(loss.item())
+        
+        # Validation
+        speaker_encoder.eval()
+        val_loss_meter = AverageMeter()
+        for anchor_sample, positive_sample, negative_sample in tqdm(val_data):
+            anchor_sample = anchor_sample.to(device)
+            positive_sample = positive_sample.to(device)
+            negative_sample = negative_sample.to(device)
 
-            loss_meter.update(loss.item())
-            iter_meter.update(time.time()-start_time)
+            anchor_embedding = speaker_encoder(anchor_sample)
+            positive_embedding = speaker_encoder(positive_sample)
+            negative_embedding = speaker_encoder(negative_sample)
+
+            loss = loss_function(anchor_embedding, positive_embedding, negative_embedding)
+
+            val_loss_meter.update(loss.item())
+
+        print(f"Train Loss: {train_loss_meter.avg:.6f} | Val Loss: {val_loss_meter.avg:.6f} | Time: {time.time() - start_time:.2f}s")
+
+        if val_loss_meter.avg < best_val_loss:
+            print(f"Best validation loss so far, saving model")
+            best_val_loss = val_loss_meter.avg
+            torch.save(speaker_encoder.state_dict(), f"{config['save_dir']}/encoder_epoch{epoch}.pt")
         
-        print(
-            f'Epoch: [{epoch}][{loss}/{len(dataloader):.3f}]\t'
-            f'Loss {loss_meter.val:.3f} ({loss_meter.avg:.3f})\t'
-            f'Time {iter_meter.val:.3f} ({iter_meter.avg:.3f})\t'
-            )
-        
-        torch.save(speaker_encoder.state_dict(), f"{config['save_dir']}/encoder_epoch{epoch}.pt")
     
     print(f"Completed in {(time.time()-start_time):.3f}")
 
