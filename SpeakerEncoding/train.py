@@ -54,7 +54,7 @@ def train(config):
     loss_function = nn.TripletMarginLoss(margin=config['triplet_loss_margin'])
     optimizer = optim.Adam(speaker_encoder.parameters(), lr=config['lr'])
 
-    best_val_loss = 0.0
+    best_val_loss = float('inf')
 
     for epoch in range(config['epochs']):
         print(f"\nEpoch {epoch}/{config['epochs']}")
