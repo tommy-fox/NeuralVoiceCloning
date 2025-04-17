@@ -1,0 +1,45 @@
+model:
+  mel_dim: 201
+  hidden_dim: 128
+  attn_dim: 128
+  embedding_out_dim: 128
+  N_prenet: 2
+  N_conv: 2
+
+# Dataset configs
+huggingface_configs:
+  - irish_male
+  - midlands_female
+  - midlands_male
+  - northern_female
+  - northern_male
+  - scottish_female
+  - scottish_male
+  - southern_female
+  - southern_male
+  - welsh_female
+  - welsh_male
+
+local_dataset_dir: "./local_english_dialects"
+
+# Dataset split ratios
+train_split: 0.7
+val_split: 0.15
+test_split: 0.15
+
+# Audio preprocessing
+sample_rate: 16000
+sample_duration: 5.0
+n_fft: 2048
+win_length: 1600
+hop_length: 400
+n_mels: 80 # Used for MelSpectrogram
+
+# Training
+batch_size: 64
+epochs: 20
+triplet_loss_margin: 0.3
+lr: 0.0003
+
+# Checkpoint saving
+save_dir: "./checkpoints"
