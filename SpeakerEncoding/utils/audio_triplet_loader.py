@@ -14,13 +14,14 @@ from torch.utils.data import Dataset
 
 class AudioTripletLoader(Dataset):
     def __init__(self, config):
-        self.data_path = config["preprocessed_dataset_path"]
-        self.sample_rate = config["sample_rate"]
-        self.n_mels = config["n_mels"]
-        self.n_fft = config["n_fft"]
-        self.win_length = config["win_length"]
-        self.hop_length = config["hop_length"]
-        self.sample_duration = config.get("sample_duration", 1.0)  # in seconds
+        data_config = config['data']
+        self.data_path = data_config["preprocessed_dataset_path"]
+        self.sample_rate = data_config["sample_rate"]
+        self.n_mels = data_config["n_mels"]
+        self.n_fft = data_config["n_fft"]
+        self.win_length = data_config["win_length"]
+        self.hop_length = data_config["hop_length"]
+        self.sample_duration = data_config.get("sample_duration", 1.0)  # in seconds
         self.max_frames = int(self.sample_duration * self.sample_rate)
 
         # Get speaker IDs from data directory, assumes sub directories are speaker ID's
@@ -36,7 +37,7 @@ class AudioTripletLoader(Dataset):
             samples_for_speaker = [
                 os.path.join(self.data_path, speaker, file)
                 for file in os.listdir(os.path.join(self.data_path, speaker))
-                if file.endswith(config["data_file_extension"])
+                if file.endswith(data_config["data_file_extension"])
             ]
             if len(samples_for_speaker) >= 2:
                 self.speaker_to_samples[speaker] = samples_for_speaker
@@ -56,6 +57,7 @@ class AudioTripletLoader(Dataset):
 
     def __getitem__(self, idx):
         anchor_speaker = random.choice(self.speakers)
+        anchor_id = self.speakers.index(anchor_speaker)
 
         negative_speaker = random.choice([
             speaker for speaker in self.speakers 
@@ -69,7 +71,7 @@ class AudioTripletLoader(Dataset):
         positive_mel = self.load_mel_from_audio_file(positive_sample)
         negative_mel = self.load_mel_from_audio_file(negative_sample)
 
-        return anchor_mel, positive_mel, negative_mel
+        return anchor_mel, positive_mel, negative_mel, anchor_id
 
     def load_mel_from_audio_file(self, filepath):
         audio_data, audio_sample_rate = torchaudio.load(filepath)

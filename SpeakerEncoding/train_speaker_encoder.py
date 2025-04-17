@@ -15,9 +15,10 @@ def load_dataset(config):
     full_dataset = AudioTripletLoader(config)
     total_num_samples = len(full_dataset)
 
-    n_train = int(config['train_split'] * total_num_samples)
-    n_val = int(config['val_split'] * total_num_samples)
-    n_test = int(config['test_split'] * total_num_samples)
+    model_config = config['speaker_encoder_model']
+    n_train = int(model_config['train_split'] * total_num_samples)
+    n_val = int(model_config['val_split'] * total_num_samples)
+    n_test = int(model_config['test_split'] * total_num_samples)
 
     train_split, val_split, test_split = random_split(
         full_dataset,
@@ -25,7 +26,7 @@ def load_dataset(config):
         generator=torch.Generator().manual_seed(42)
     )
 
-    batch_size = config['batch_size']
+    batch_size = model_config['batch_size']
 
     train_data = DataLoader(train_split, batch_size=batch_size, shuffle=True, num_workers=4)
     val_data = DataLoader(val_split, batch_size=batch_size, shuffle=False, num_workers=2)
@@ -38,7 +39,7 @@ def train(config):
 
     train_data, val_data, test_data = load_dataset(config)
 
-    model_config = config['model']
+    model_config = config['speaker_encoder_model']
 
     speaker_encoder = SpeakerEncoder(
         mel_dim=model_config['mel_dim'],
@@ -51,19 +52,19 @@ def train(config):
 
     speaker_encoder = speaker_encoder.to(device)
 
-    loss_function = nn.TripletMarginLoss(margin=config['triplet_loss_margin'])
-    optimizer = optim.Adam(speaker_encoder.parameters(), lr=config['lr'])
+    loss_function = nn.TripletMarginLoss(margin=model_config['triplet_loss_margin'])
+    optimizer = optim.Adam(speaker_encoder.parameters(), lr=model_config['lr'])
 
     best_val_loss = float('inf')
 
-    for epoch in range(config['epochs']):
-        print(f"\nEpoch {epoch}/{config['epochs']}")
+    for epoch in range(model_config['epochs']):
+        print(f"\nEpoch {epoch}/{model_config['epochs']}")
         start_time = time.time()
 
         # Training
         speaker_encoder.train()
         train_loss_meter = AverageMeter()
-        for anchor_sample, positive_sample, negative_sample in tqdm(train_data):
+        for anchor_sample, positive_sample, negative_sample, _ in tqdm(train_data):
             anchor_sample = anchor_sample.to(device)
             positive_sample = positive_sample.to(device)
             negative_sample = negative_sample.to(device)
@@ -83,7 +84,7 @@ def train(config):
         # Validation
         speaker_encoder.eval()
         val_loss_meter = AverageMeter()
-        for anchor_sample, positive_sample, negative_sample in tqdm(val_data):
+        for anchor_sample, positive_sample, negative_sample, _ in tqdm(val_data):
             anchor_sample = anchor_sample.to(device)
             positive_sample = positive_sample.to(device)
             negative_sample = negative_sample.to(device)
@@ -101,7 +102,7 @@ def train(config):
         if val_loss_meter.avg < best_val_loss:
             print(f"Best validation loss so far, saving model")
             best_val_loss = val_loss_meter.avg
-            torch.save(speaker_encoder.state_dict(), f"{config['save_dir']}/encoder_epoch{epoch}.pt")
+            torch.save(speaker_encoder.state_dict(), f"{config['checkpoint_save_dir']}/encoder_epoch{epoch}.pt")
         
     
     print(f"Completed in {(time.time()-start_time):.3f}")
