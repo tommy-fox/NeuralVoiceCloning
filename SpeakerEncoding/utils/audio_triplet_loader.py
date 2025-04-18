@@ -1,56 +1,39 @@
 '''
 audio_triplet_loader.py
-This file parses speaker IDs from a dataset directory and maps each speaker ID to samples from that speaker.
+Parses speaker IDs from a dataset directory and maps each speaker ID to samples from that speaker.
 When retrieving samples during testing, the class returns 3 total samples:
 2 samples from the target speaker (anchor, positive) and 1 sample from a negative speaker.
-The samples are drawn randomly from the dataset and converted into a Mel Spectrogram before being returned.
+The samples are drawn randomly from the dataset and loaded as precomputed Mel Spectrogram tensors.
 '''
 
 import os
 import random
 import torch
-import torchaudio
 from torch.utils.data import Dataset
 
 class AudioTripletLoader(Dataset):
     def __init__(self, config):
-        data_config = config['data']
-        self.data_path = data_config["preprocessed_dataset_path"]
-        self.sample_rate = data_config["sample_rate"]
-        self.n_mels = data_config["n_mels"]
-        self.n_fft = data_config["n_fft"]
-        self.win_length = data_config["win_length"]
-        self.hop_length = data_config["hop_length"]
-        self.sample_duration = data_config.get("sample_duration", 1.0)  # in seconds
-        self.max_frames = int(self.sample_duration * self.sample_rate)
+        data_path = config['data']['preprocessed_dataset_path']
 
-        # Get speaker IDs from data directory, assumes sub directories are speaker ID's
-        data_dir_contents = os.listdir(self.data_path)
+        # Get speaker IDs from data directory, assumes subdirectories are speaker IDs
+        data_dir_contents = os.listdir(data_path)
         self.speakers = [
             speaker_id for speaker_id in data_dir_contents
-            if os.path.isdir(os.path.join(self.data_path, speaker_id))
+            if os.path.isdir(os.path.join(data_path, speaker_id))
         ]
 
-        # Map speaker ID to a list of samples for that speaker using files in data directory's subdirectories
+        # Map speaker ID to a list of mel spectrogram samples for that speaker
         self.speaker_to_samples = {}
         for speaker in self.speakers:
             samples_for_speaker = [
-                os.path.join(self.data_path, speaker, file)
-                for file in os.listdir(os.path.join(self.data_path, speaker))
-                if file.endswith(data_config["data_file_extension"])
+                os.path.join(data_path, speaker, file)
+                for file in os.listdir(os.path.join(data_path, speaker))
+                if file.endswith(".pt")
             ]
             if len(samples_for_speaker) >= 2:
                 self.speaker_to_samples[speaker] = samples_for_speaker
 
         self.speakers = list(self.speaker_to_samples.keys())
-
-        self.mel_transform = torchaudio.transforms.MelSpectrogram(
-            sample_rate=self.sample_rate,
-            n_fft=self.n_fft,
-            win_length=self.win_length,
-            hop_length=self.hop_length,
-            n_mels=self.n_mels
-        )
 
     def __len__(self):
         return 100000
@@ -67,24 +50,12 @@ class AudioTripletLoader(Dataset):
         anchor_sample, positive_sample = random.sample(self.speaker_to_samples[anchor_speaker], 2)
         negative_sample = random.choice(self.speaker_to_samples[negative_speaker])
 
-        anchor_mel = self.load_mel_from_audio_file(anchor_sample)
-        positive_mel = self.load_mel_from_audio_file(positive_sample)
-        negative_mel = self.load_mel_from_audio_file(negative_sample)
+        anchor_mel = self.load_mel_from_file(anchor_sample)
+        positive_mel = self.load_mel_from_file(positive_sample)
+        negative_mel = self.load_mel_from_file(negative_sample)
 
         return anchor_mel, positive_mel, negative_mel, anchor_id
 
-    def load_mel_from_audio_file(self, filepath):
-        audio_data, audio_sample_rate = torchaudio.load(filepath)
-        # Force all audio samples to be of the same duration
-        if audio_data.shape[1] > self.max_frames:
-            audio_data = audio_data[:, :self.max_frames]
-        elif audio_data.shape[1] < self.max_frames:
-            padding = self.max_frames - audio_data.shape[1]
-            audio_data = torch.nn.functional.pad(audio_data, (0, padding))
-        
-        audio_data_mels = self.mel_transform(audio_data).squeeze(0)  #[n_mels, n_time_steps]
-
-        # Normalize mel data (subtract mean, divide by standard deviation)
-        audio_data_mels = (audio_data_mels - audio_data_mels.mean()) / (audio_data_mels.std())
-
-        return audio_data_mels.unsqueeze(0)  #[1, n_mels, n_time_steps]
+    def load_mel_from_file(self, filepath):
+        mel_tensor = torch.load(filepath)  # Assumes [1, n_mels, n_frames] shape
+        return mel_tensor
