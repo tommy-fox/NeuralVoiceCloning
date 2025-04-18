@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import torch.nn.functional as F
+from ...utils import length_to_mask
 
 class SLMAdversarialLoss(torch.nn.Module):
 
@@ -189,7 +190,3 @@ class SLMAdversarialLoss(torch.nn.Module):
         
         return d_loss, gen_loss, y_pred.detach().cpu().numpy()
     
-def length_to_mask(lengths):
-    mask = torch.arange(lengths.max()).unsqueeze(0).expand(lengths.shape[0], -1).type_as(lengths)
-    mask = torch.gt(mask+1, lengths.unsqueeze(1))
-    return mask
