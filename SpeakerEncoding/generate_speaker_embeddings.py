@@ -18,7 +18,7 @@ def generate_speaker_embeddings(config):
     checkpoint_path = config['checkpoint_path']
     output_path = config['speaker_embedding_path']
 
-    model_config = config['model']
+    model_config = config['speaker_encoder_model']
     speaker_encoder = SpeakerEncoder(
         mel_dim=model_config['mel_dim'],
         hidden_dim=model_config['hidden_dim'],
@@ -35,7 +35,7 @@ def generate_speaker_embeddings(config):
 
     # Load and preprocess audio data
     audio_data = AudioTripletLoader(config)
-    audio_data_loader = DataLoader(audio_data, batch_size=config['batch_size'], shuffle=False, num_workers=2)
+    audio_data_loader = DataLoader(audio_data, batch_size=model_config['batch_size'], shuffle=False, num_workers=2)
 
     speaker_embeddings = []
     speaker_labels = []
