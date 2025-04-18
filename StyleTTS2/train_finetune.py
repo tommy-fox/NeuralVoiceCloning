@@ -26,7 +26,7 @@ from losses import *
 from utils import *
 
 from models.losses.slmadv import SLMAdversarialLoss
-from models.diffusion.sampler import DiffusionSampler, ADPM2Sampler, KarrasSchedule
+from models.diffusion import DiffusionSampler, ADPM2Sampler, KarrasSchedule
 
 from optimizers import build_optimizer
 
