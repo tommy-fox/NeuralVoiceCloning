@@ -1,6 +1,8 @@
 speaker_encoder_model:
   batch_size: 64
   lr: 0.0006
+  lr_anneal_step_size: 10
+  lr_anneal_gamma: 0.95
   epochs: 100
   train_split: 0.7
   val_split: 0.15

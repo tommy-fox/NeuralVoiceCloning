@@ -55,6 +55,7 @@ def train(config):
     loss_function = nn.TripletMarginLoss(margin=model_config['triplet_loss_margin'])
     optimizer = optim.Adam(speaker_encoder.parameters(), lr=model_config['lr'])
 
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=model_config['lr_anneal_step_size'], gamma=model_config['lr_anneal_gamma'])
     best_val_loss = float('inf')
 
     for epoch in range(model_config['epochs']):
@@ -80,6 +81,8 @@ def train(config):
             optimizer.step()
 
             train_loss_meter.update(loss.item())
+            
+        scheduler.step()
         
         # Validation
         speaker_encoder.eval()
