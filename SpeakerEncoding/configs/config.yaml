@@ -1,25 +1,41 @@
-model:
+speaker_encoder_model:
+  batch_size: 64
+  lr: 0.0006
+  lr_anneal_step_size: 10
+  lr_anneal_gamma: 0.95
+  epochs: 100
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
   mel_dim: 201
   hidden_dim: 128
   attn_dim: 128
   embedding_out_dim: 128
   N_prenet: 2
   N_conv: 2
+  triplet_loss_margin: 0.3
 
-train_split: 0.7
-val_split: 0.15
-test_split: 0.15
-dataset_path: "./vctk_data/audio_samples"
-preprocessed_dataset_path: "./preprocessed_vctk_data"
-data_file_extension: ".flac"
-sample_rate: 16000
-sample_duration: 5.0 # files are forced to be of the same length for consistent comparison
-n_fft: 2048
-win_length: 1600
-hop_length: 400
-n_mels: 80
-batch_size: 64
-epochs: 20
-triplet_loss_margin: 0.3
-lr: 0.0003
-save_dir: "./checkpoints"
+
+
+speaker_classifier_model:
+  batch_size: 64
+  lr: 0.0003
+  epochs: 100
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+
+data:
+  data_file_extension: ".flac"
+  sample_rate: 16000
+  sample_duration: 5.0 # files are forced to be of the same length for consistent comparison
+  n_fft: 2048
+  win_length: 1600
+  hop_length: 400
+  n_mels: 80
+  dataset_path: "./vctk_data/audio_samples"
+  preprocessed_dataset_path: "./preprocessed_vctk_data"
+
+checkpoint_save_dir: "./checkpoints"
+checkpoint_path: "./checkpoints/speaker_encoder_epoch37_vctk.pt"
+speaker_embedding_path: "./speaker_embeddings/generated_speaker_embeddings.pt"
