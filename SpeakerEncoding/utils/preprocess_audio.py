@@ -63,7 +63,7 @@ def preprocess_audio(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Resample and preprocess audio into mel spectrograms")
-    parser.add_argument("--config_file", type=str, default="configs/config.yaml", help="Path to YAML config")
+    parser.add_argument("--config_file", type=str, default="configs/eng_dialect_config.yaml", help="Path to YAML config")
     args = parser.parse_args()
 
     with open(args.config_file, 'r') as file:

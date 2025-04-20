@@ -1,12 +1,43 @@
-model:
+speaker_encoder_model:
+  batch_size: 64
+  lr: 0.0006
+  lr_anneal_step_size: 10
+  lr_anneal_gamma: 0.95
+  epochs: 100
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
   mel_dim: 201
   hidden_dim: 128
   attn_dim: 128
   embedding_out_dim: 128
   N_prenet: 2
   N_conv: 2
+  triplet_loss_margin: 0.3
 
-# Dataset configs
+speaker_classifier_model:
+  batch_size: 64
+  lr: 0.0003
+  epochs: 100
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+
+data:
+  data_file_extension: ".wav"
+  sample_rate: 16000
+  sample_duration: 5.0 # files are forced to be of the same length for consistent comparison
+  n_fft: 2048
+  win_length: 1600
+  hop_length: 400
+  n_mels: 80
+  dataset_path: "./local_english_dialects"
+  preprocessed_dataset_path: "./preprocessed_eng_dia"
+
+checkpoint_save_dir: "./checkpoints"
+checkpoint_path: "./checkpoints/speaker_encoder_epoch37_vctk.pt"
+speaker_embedding_path: "./speaker_embeddings/generated_speaker_embeddings.pt"
+
 huggingface_configs:
   - irish_male
   - midlands_female
@@ -19,27 +50,3 @@ huggingface_configs:
   - southern_male
   - welsh_female
   - welsh_male
-
-local_dataset_dir: "./local_english_dialects"
-
-# Dataset split ratios
-train_split: 0.7
-val_split: 0.15
-test_split: 0.15
-
-# Audio preprocessing
-sample_rate: 16000
-sample_duration: 5.0
-n_fft: 2048
-win_length: 1600
-hop_length: 400
-n_mels: 80 # Used for MelSpectrogram
-
-# Training
-batch_size: 64
-epochs: 100
-triplet_loss_margin: 0.3
-lr: 0.0003
-
-# Checkpoint saving
-checkpoint_save_dir: "./checkpoints"

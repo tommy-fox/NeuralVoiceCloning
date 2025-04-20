@@ -1,62 +1,53 @@
+import os
 import random
 import torch
-import torchaudio
 from torch.utils.data import Dataset
 
 class HuggingFaceTripletLoader(Dataset):
-    def __init__(self, dataset, config):
-        self.dataset = dataset
-        self.sample_rate = config["sample_rate"]
-        self.n_mels = config["n_mels"]
-        self.n_fft = config["n_fft"]
-        self.win_length = config["win_length"]
-        self.hop_length = config["hop_length"]
-        self.sample_duration = config.get("sample_duration", 1.0)
-        self.max_frames = int(self.sample_duration * self.sample_rate)
+    def __init__(self, config):
+        data_path = config['data']['preprocessed_dataset_path']
 
-        self.speaker_to_indices = {}
-        for idx, sample in enumerate(self.dataset):
-            speaker = sample["speaker_label"]
-            if speaker not in self.speaker_to_indices:
-                self.speaker_to_indices[speaker] = []
-            self.speaker_to_indices[speaker].append(idx)
+        # Get speaker IDs from data directory, assumes subdirectories are speaker IDs
+        data_dir_contents = os.listdir(data_path)
+        self.speakers = [
+            speaker_id for speaker_id in data_dir_contents
+            if os.path.isdir(os.path.join(data_path, speaker_id))
+        ]
 
-        self.speakers = list(self.speaker_to_indices.keys())
+        # Map speaker ID to a list of mel spectrogram samples for that speaker
+        self.speaker_to_samples = {}
+        for speaker in self.speakers:
+            samples_for_speaker = [
+                os.path.join(data_path, speaker, file)
+                for file in os.listdir(os.path.join(data_path, speaker))
+                if file.endswith(".pt")
+            ]
+            if len(samples_for_speaker) >= 2:
+                self.speaker_to_samples[speaker] = samples_for_speaker
 
-        self.mel_transform = torchaudio.transforms.MelSpectrogram(
-            sample_rate=self.sample_rate,
-            n_fft=self.n_fft,
-            win_length=self.win_length,
-            hop_length=self.hop_length,
-            n_mels=self.n_mels,
-        )
+        self.speakers = list(self.speaker_to_samples.keys())
 
     def __len__(self):
-        return 100000  # or adjust based on len(self.dataset)
+        return 100000
 
     def __getitem__(self, idx):
         anchor_speaker = random.choice(self.speakers)
-        negative_speaker = random.choice([s for s in self.speakers if s != anchor_speaker])
+        anchor_id = self.speakers.index(anchor_speaker)
 
-        anchor_idx, positive_idx = random.sample(self.speaker_to_indices[anchor_speaker], 2)
-        negative_idx = random.choice(self.speaker_to_indices[negative_speaker])
+        negative_speaker = random.choice([
+            speaker for speaker in self.speakers 
+            if speaker != anchor_speaker
+        ])
 
-        anchor_mel = self._load_mel(anchor_idx)
-        positive_mel = self._load_mel(positive_idx)
-        negative_mel = self._load_mel(negative_idx)
+        anchor_sample, positive_sample = random.sample(self.speaker_to_samples[anchor_speaker], 2)
+        negative_sample = random.choice(self.speaker_to_samples[negative_speaker])
 
-        return anchor_mel, positive_mel, negative_mel
+        anchor_mel = self.load_mel_from_file(anchor_sample)
+        positive_mel = self.load_mel_from_file(positive_sample)
+        negative_mel = self.load_mel_from_file(negative_sample)
 
-    def _load_mel(self, idx):
-        audio_obj = self.dataset[idx]["audio"]
-        audio_array = torch.tensor(audio_obj["array"]).unsqueeze(0).float()
+        return anchor_mel, positive_mel, negative_mel, anchor_id
 
-        if audio_array.shape[1] > self.max_frames:
-            audio_array = audio_array[:, :self.max_frames]
-        elif audio_array.shape[1] < self.max_frames:
-            padding = self.max_frames - audio_array.shape[1]
-            audio_array = torch.nn.functional.pad(audio_array, (0, padding))
-
-        mel = self.mel_transform(audio_array).squeeze(0)
-        mel = (mel - mel.mean()) / mel.std()
-        return mel.unsqueeze(0)
+    def load_mel_from_file(self, filepath):
+        mel_tensor = torch.load(filepath)  # Assumes [1, n_mels, n_frames] shape
+        return mel_tensor
