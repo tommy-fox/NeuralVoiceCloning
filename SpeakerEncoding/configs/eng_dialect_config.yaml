@@ -37,9 +37,9 @@ n_mels: 80 # Used for MelSpectrogram
 
 # Training
 batch_size: 64
-epochs: 20
+epochs: 100
 triplet_loss_margin: 0.3
 lr: 0.0003
 
 # Checkpoint saving
-save_dir: "./checkpoints"
+checkpoint_save_dir: "./checkpoints"
