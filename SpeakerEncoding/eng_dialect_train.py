@@ -1,14 +1,17 @@
-import yaml, argparse, time, torch
-from tqdm import tqdm
+import os
+import time
+import yaml
+import torch
+import argparse
 import torch.nn as nn
 import torch.optim as optim
+from tqdm import tqdm
+from datasets import load_dataset, concatenate_datasets, Dataset, Audio
 from torch.utils.data import DataLoader, random_split
-from datasets import load_dataset, concatenate_datasets
+
 from utils.h_f_triplet_loader import HuggingFaceTripletLoader
 from utils.data_utils import AverageMeter
 from models.speaker_encoder import SpeakerEncoder
-import os
-from datasets import Dataset, Audio
 
 def load_combined_dataset(config):
     local_dir = config["local_dataset_dir"]
@@ -20,7 +23,7 @@ def load_combined_dataset(config):
         audio_files = [
             {"audio": os.path.join(subdir, f), "speaker_label": c}
             for f in os.listdir(subdir)
-            if f.endswith(".wav")  
+            if f.endswith(".wav")
         ]
         ds = Dataset.from_list(audio_files)
         ds = ds.cast_column("audio", Audio(sampling_rate=config["sample_rate"]))
@@ -64,9 +67,7 @@ def train(config):
         embedding_out_dim=model_config['embedding_out_dim'],
         N_prenet=model_config['N_prenet'],
         N_conv=model_config['N_conv']
-    )
-
-    speaker_encoder = speaker_encoder.to(device)
+    ).to(device)
 
     loss_function = nn.TripletMarginLoss(margin=config['triplet_loss_margin'])
     optimizer = optim.Adam(speaker_encoder.parameters(), lr=config['lr'])
@@ -103,12 +104,13 @@ def train(config):
             positive_sample = positive_sample.to(device)
             negative_sample = negative_sample.to(device)
 
-            anchor_embedding = speaker_encoder(anchor_sample)
-            positive_embedding = speaker_encoder(positive_sample)
-            negative_embedding = speaker_encoder(negative_sample)
+            with torch.no_grad():
+                anchor_embedding = speaker_encoder(anchor_sample)
+                positive_embedding = speaker_encoder(positive_sample)
+                negative_embedding = speaker_encoder(negative_sample)
 
-            loss = loss_function(anchor_embedding, positive_embedding, negative_embedding)
-            val_loss_meter.update(loss.item())
+                loss = loss_function(anchor_embedding, positive_embedding, negative_embedding)
+                val_loss_meter.update(loss.item())
 
         print(f"Train Loss: {train_loss_meter.avg:.6f} | Val Loss: {val_loss_meter.avg:.6f} | Time: {time.time() - start_time:.2f}s")
 
@@ -126,3 +128,4 @@ if __name__ == "__main__":
     with open(args.config_file, 'r') as file:
         config = yaml.safe_load(file)
     train(config)
+
