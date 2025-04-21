@@ -28,6 +28,8 @@ from utils import *
 from models.losses.slmadv import SLMAdversarialLoss
 from models.diffusion import DiffusionSampler, ADPM2Sampler, KarrasSchedule
 
+from models_util import *
+
 from optimizers import build_optimizer
 
 import os.path as osp
@@ -54,6 +56,21 @@ logger.addHandler(handler)
 @click.option('-p', '--config_path', default='Configs/config_ft.yml', type=str)
 def main(config_path):
     config = yaml.safe_load(open(config_path))
+
+    # BEGIN CUSTOM EMBEDDINGS
+    # Load external speaker embeddings if specified
+    custom_embed_path = "./CustomEmbeddings/generated_speaker_embeddings_encoder_epoch814.pt" 
+    speaker_embedding_map = None
+    if custom_embed_path:
+        print("Loading external speaker embeddings...")
+        loaded = torch.load(custom_embed_path)
+        embeddings = loaded['speaker_embeddings']
+        labels = loaded['speaker_labels']
+        speaker_embedding_map = {
+            int(label.item()): embedding
+            for label, embedding in zip(labels, embeddings)
+        }
+    # END CUSTOM EMBEDDINGS
     
     log_dir = config['log_dir']
     if not osp.exists(log_dir): os.makedirs(log_dir, exist_ok=True)
@@ -91,7 +108,7 @@ def main(config_path):
     optimizer_params = Munch(config['optimizer_params'])
     
     train_list, val_list = get_data_path_list(train_path, val_path)
-    device = 'cuda'
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_dataloader = build_dataloader(train_list,
                                         root_path,
@@ -267,11 +284,16 @@ def main(config_path):
                 mel_mask = length_to_mask(mel_input_length).to(device)
                 text_mask = length_to_mask(input_lengths).to(texts.device)
 
+                # BEGIN CUSTOM EMBEDDINGS
                 # compute reference styles
                 if multispeaker and epoch >= diff_epoch:
-                    ref_ss = model.style_encoder(ref_mels.unsqueeze(1))
-                    ref_sp = model.predictor_encoder(ref_mels.unsqueeze(1))
-                    ref = torch.cat([ref_ss, ref_sp], dim=1)
+                    if speaker_embedding_map is not None:
+                        ref = torch.stack([speaker_embedding_map[bib.item()].to(device) for bib in input_lengths])
+                    else:
+                        ref_ss = model.style_encoder(ref_mels.unsqueeze(1))
+                        ref_sp = model.predictor_encoder(ref_mels.unsqueeze(1))
+                        ref = torch.cat([ref_ss, ref_sp], dim=1)
+                # END CUSTOM EMBEDDINGS
                 
             try:
                 ppgs, s2s_pred, s2s_attn = model.text_aligner(mels, mask, texts)
