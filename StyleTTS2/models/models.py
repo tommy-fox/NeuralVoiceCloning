@@ -12,14 +12,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils import weight_norm, remove_weight_norm, spectral_norm
 
-from Utils.ASR.models import ASRCNN
-from Utils.JDC.model import JDCNet
+from ..Utils.ASR.models import ASRCNN
+from ..Utils.JDC.model import JDCNet
 
-from models.diffusion.sampler import KDiffusion, LogNormalDistribution
-from models.diffusion.modules import Transformer1d, StyleTransformer1d
-from models.diffusion.style_diffisusion import AudioDiffusionConditional
+from .diffusion.sampler import KDiffusion, LogNormalDistribution
+from .diffusion.modules import Transformer1d, StyleTransformer1d
+from .diffusion.style_diffisusion import AudioDiffusionConditional
 
-from models.losses.discriminators import MultiPeriodDiscriminator, MultiResSpecDiscriminator, WavLMDiscriminator
+from .losses.discriminators import MultiPeriodDiscriminator, MultiResSpecDiscriminator, WavLMDiscriminator
 
 from munch import Munch
 import yaml
@@ -615,7 +615,7 @@ def build_model(args, text_aligner, pitch_extractor, bert):
     assert args.decoder.type in ['istftnet', 'hifigan'], 'Decoder type unknown'
     
     if args.decoder.type == "istftnet":
-        from models.decoders.istftnet import Decoder
+        from StyleTTS2.models.decoders.istftnet import Decoder
         decoder = Decoder(dim_in=args.hidden_dim, style_dim=args.style_dim, dim_out=args.n_mels,
                 resblock_kernel_sizes = args.decoder.resblock_kernel_sizes,
                 upsample_rates = args.decoder.upsample_rates,
@@ -624,7 +624,7 @@ def build_model(args, text_aligner, pitch_extractor, bert):
                 upsample_kernel_sizes=args.decoder.upsample_kernel_sizes, 
                 gen_istft_n_fft=args.decoder.gen_istft_n_fft, gen_istft_hop_size=args.decoder.gen_istft_hop_size) 
     else:
-        from models.decoders.hifigan import Decoder
+        from StyleTTS2.models.decoders.hifigan import Decoder
         decoder = Decoder(dim_in=args.hidden_dim, style_dim=args.style_dim, dim_out=args.n_mels,
                 resblock_kernel_sizes = args.decoder.resblock_kernel_sizes,
                 upsample_rates = args.decoder.upsample_rates,

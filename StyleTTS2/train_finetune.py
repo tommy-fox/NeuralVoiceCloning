@@ -15,20 +15,21 @@ import warnings
 warnings.simplefilter('ignore')
 from torch.utils.tensorboard import SummaryWriter
 
-from meldataset import build_dataloader
+from .meldataset import build_dataloader
 
-from Utils.ASR.models import ASRCNN
-from Utils.JDC.model import JDCNet
-from Utils.PLBERT.util import load_plbert
+from .Utils.ASR.models import ASRCNN
+from .Utils.JDC.model import JDCNet
+from .Utils.PLBERT.util import load_plbert
 
-from models import *
-from losses import *
-from utils import *
+from StyleTTS2.models import load_ASR_models, load_F0_models, build_model, load_checkpoint
 
-from models.losses.slmadv import SLMAdversarialLoss
-from models.diffusion import DiffusionSampler, ADPM2Sampler, KarrasSchedule
+from .losses import *
+from .utils import *
 
-from optimizers import build_optimizer
+from StyleTTS2.models.losses.slmadv import SLMAdversarialLoss
+from StyleTTS2.models.diffusion import DiffusionSampler, ADPM2Sampler, KarrasSchedule
+
+from .optimizers import build_optimizer
 
 import os.path as osp
 import os
@@ -51,7 +52,7 @@ logger.addHandler(handler)
 
 
 @click.command()
-@click.option('-p', '--config_path', default='Configs/config_ft.yml', type=str)
+@click.option('-p', '--config_path', default='configs/config_ft.yml', type=str)
 def main(config_path):
     config = yaml.safe_load(open(config_path))
     

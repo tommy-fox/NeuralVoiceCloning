@@ -1,2 +1,1 @@
-from hifigan import *
-from istftnet import *
+from StyleTTS2.models.decoders import *

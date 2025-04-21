@@ -2,5 +2,16 @@ __pycache__/
 .env
 .DS_Store
 .aider*
-StyleTTS2/pretrained/StyleTTS2-LibreTTS/*.pth
-StyleTTS2/Utils/ASR/*.pth
+
+# Ignore all tensor files in the StyleTTS2/pretrained directory
+StyleTTS2/pretrained/StyleTTS2-LJSpeech/tensorboard
+StyleTTS2/pretrained/StyleTTS2-LibreTTS/tensorboard
+StyleTTS2/pretrained/Kokoro/tensorboard
+
+# Ignore all logs in the StyleTTS2/pretrained directory
+StyleTTS2/pretrained/StyleTTS2-LJSpeech/*.log
+StyleTTS2/pretrained/StyleTTS2-LibreTTS/*.log
+StyleTTS2/pretrained/Kokoro/*.log
+
+# Ignore the training data directory
+StyleTTS2/Data/
