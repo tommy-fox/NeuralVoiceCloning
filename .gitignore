@@ -1,3 +1,6 @@
 __pycache__/
 .env
 .DS_Store
+.aider*
+StyleTTS2/pretrained/StyleTTS2-LibreTTS/*.pth
+StyleTTS2/Utils/ASR/*.pth
