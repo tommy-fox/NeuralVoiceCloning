@@ -4,3 +4,8 @@ __pycache__/
 .aider*
 StyleTTS2/pretrained/StyleTTS2-LibreTTS/*.pth
 StyleTTS2/Utils/ASR/*.pth
+*.pt
+*.flac
+*.wav
+*.txt
+*.png
