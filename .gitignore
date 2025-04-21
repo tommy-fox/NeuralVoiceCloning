@@ -3,6 +3,10 @@ __pycache__/
 .DS_Store
 .aider*
 
+# Ignore all checkpoints in the StyleTTS2/pretrained directory
+# This includes all subdirectories and files with .pth extension
+StyleTTS2/pretrained/**/*.pth
+
 # Ignore all tensor files in the StyleTTS2/pretrained directory
 StyleTTS2/pretrained/StyleTTS2-LJSpeech/tensorboard
 StyleTTS2/pretrained/StyleTTS2-LibreTTS/tensorboard
@@ -12,6 +16,10 @@ StyleTTS2/pretrained/Kokoro/tensorboard
 StyleTTS2/pretrained/StyleTTS2-LJSpeech/*.log
 StyleTTS2/pretrained/StyleTTS2-LibreTTS/*.log
 StyleTTS2/pretrained/Kokoro/*.log
+
+# Ignore all checkpoints in the StyleTTS2/Utils directory
+StyleTTS2/Utils/**/*.t7
+StyleTTS2/Utils/**/*.pth
 
 # Ignore the training data directory
 StyleTTS2/Data/
