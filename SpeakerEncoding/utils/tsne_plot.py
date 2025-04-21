@@ -9,6 +9,7 @@ def load_speaker_embeddings(path):
     return data['speaker_embeddings'], data['speaker_labels']
 
 def plot_tsne(speaker_embeddings, speaker_labels):
+    speaker_embeddings = speaker_embeddings.squeeze(1)
     speaker_embeddings_numpy = speaker_embeddings.cpu().numpy()
     speaker_labels_numpy = speaker_labels.cpu().numpy()
     speaker_labels_encoded = LabelEncoder().fit_transform(speaker_labels_numpy)
