@@ -1,2 +1,2 @@
-from hifigan import *
-from istftnet import *
+from .hifigan import *
+from .istftnet import *

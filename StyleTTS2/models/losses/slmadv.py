@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import torch.nn.functional as F
-from ...utils import length_to_mask
+from utils import length_to_mask
 
 class SLMAdversarialLoss(torch.nn.Module):
 
