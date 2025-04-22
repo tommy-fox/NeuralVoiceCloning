@@ -39,22 +39,34 @@ class AudioTripletLoader(Dataset):
         return 100000
 
     def __getitem__(self, idx):
-        anchor_speaker = random.choice(self.speakers)
-        anchor_id = self.speakers.index(anchor_speaker)
+        anchor_id = random.choice(self.speakers)
 
         negative_speaker = random.choice([
             speaker for speaker in self.speakers 
-            if speaker != anchor_speaker
+            if speaker != anchor_id
         ])
 
-        anchor_sample, positive_sample = random.sample(self.speaker_to_samples[anchor_speaker], 2)
+        anchor_sample, positive_sample = random.sample(self.speaker_to_samples[anchor_id], 2)
         negative_sample = random.choice(self.speaker_to_samples[negative_speaker])
 
         anchor_mel = self.load_mel_from_file(anchor_sample)
         positive_mel = self.load_mel_from_file(positive_sample)
         negative_mel = self.load_mel_from_file(negative_sample)
 
-        return anchor_mel, positive_mel, negative_mel, anchor_id
+        utterance_id = self.get_utterance_id(anchor_sample)
+    
+        return anchor_mel, positive_mel, negative_mel, anchor_id, utterance_id
+    
+    def get_utterance_id(self, path):
+        # e.g., "p225/p225_001.pt" -> "p225_001"
+        parts = os.path.normpath(path).split(os.sep)
+        speaker = parts[-2]
+        utterance = os.path.splitext(parts[-1])[0]
+
+        if utterance.startswith(speaker + "_"):
+            return utterance  # Already includes speaker prefix
+        else:
+            return f"{speaker}_{utterance}"
 
     def load_mel_from_file(self, filepath):
         mel_tensor = torch.load(filepath)  # Assumes [1, n_mels, n_frames] shape
