@@ -59,7 +59,7 @@ def main(config_path):
 
     # BEGIN CUSTOM EMBEDDINGS
     # Load external speaker embeddings if specified
-    custom_embed_path = "./CustomEmbeddings/generated_speaker_embeddings_encoder_epoch814.pt" 
+    custom_embed_path = "./CustomEmbeddings/generated_speaker_embeddings_epoch814_utterance.pt" 
     speaker_embedding_map = None
     if custom_embed_path:
         print("Loading external speaker embeddings...")
@@ -278,7 +278,7 @@ def main(config_path):
         for i, batch in enumerate(train_dataloader):
             waves = batch[0]
             batch = [b.to(device) for b in batch[1:]]
-            texts, input_lengths, ref_texts, ref_lengths, mels, mel_input_length, ref_mels = batch
+            texts, input_lengths, ref_texts, ref_lengths, mels, mel_input_length, ref_mels, speaker_ids, utterance_names = batch
             with torch.no_grad():
                 mask = length_to_mask(mel_input_length // (2 ** n_down)).to(device)
                 mel_mask = length_to_mask(mel_input_length).to(device)
@@ -288,7 +288,19 @@ def main(config_path):
                 # compute reference styles
                 if multispeaker and epoch >= diff_epoch:
                     if speaker_embedding_map is not None:
-                        ref = torch.stack([speaker_embedding_map[bib.item()].to(device) for bib in input_lengths])
+                        ref = []
+                        for b in range(len(speaker_ids)):
+                            embedding_key = f"{speaker_ids[b]}_{utterance_names[b]}"
+                            if embedding_key not in speaker_embedding_map:
+                                raise KeyError(f"Missing speaker embedding for key: {embedding_key}")
+                            
+                            # Optional: Add debug-level log to compare audio shape to expected embedding use
+                            audio_len = len(waves[b])
+                            if audio_len < 5000:
+                                print(f"[WARN] Waveform for {embedding_key} is suspiciously short ({audio_len} samples).")
+
+                            ref.append(speaker_embedding_map[embedding_key].to(device))
+                        ref = torch.stack(ref)
                     else:
                         ref_ss = model.style_encoder(ref_mels.unsqueeze(1))
                         ref_sp = model.predictor_encoder(ref_mels.unsqueeze(1))

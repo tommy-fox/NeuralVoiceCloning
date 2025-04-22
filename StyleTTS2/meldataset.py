@@ -108,7 +108,7 @@ class FilePathDataset(torch.utils.data.Dataset):
         data = self.data_list[idx]
         path = data[0]
         
-        wave, text_tensor, speaker_id = self._load_tensor(data)
+        wave, text_tensor, speaker_id, utterance_name = self._load_tensor(data)
         
         mel_tensor = preprocess(wave).squeeze()
         
@@ -133,32 +133,30 @@ class FilePathDataset(torch.utils.data.Dataset):
             text.append(0)
 
             ref_text = torch.LongTensor(text)
-        
-        return speaker_id, acoustic_feature, text_tensor, ref_text, ref_mel_tensor, ref_label, path, wave
+ 
+        return speaker_id, utterance_name, acoustic_feature, text_tensor, ref_text, ref_mel_tensor, ref_label, path, wave
 
     def _load_tensor(self, data):
         wave_path, text, speaker_id = data
-        #speaker_id = int(speaker_id)
+        utterance_name = osp.splitext(osp.basename(wave_path))[0]
+        speaker_id = osp.basename(osp.dirname(wave_path))
+        
         wave, sr = sf.read(osp.join(self.root_path, wave_path))
         if wave.shape[-1] == 2:
             wave = wave[:, 0].squeeze()
         if sr != 24000:
             wave = librosa.resample(wave, orig_sr=sr, target_sr=24000)
-            #print(wave_path, sr)
-            
         wave = np.concatenate([np.zeros([5000]), wave, np.zeros([5000])], axis=0)
-        
+
         text = self.text_cleaner(text)
-        
         text.insert(0, 0)
         text.append(0)
-        
         text = torch.LongTensor(text)
 
-        return wave, text, speaker_id
+        return wave, text, speaker_id, utterance_name
 
     def _load_data(self, data):
-        wave, text_tensor, speaker_id = self._load_tensor(data)
+        wave, text_tensor, speaker_id, utterance_name = self._load_tensor(data)
         mel_tensor = preprocess(wave).squeeze()
 
         mel_length = mel_tensor.size(1)
@@ -186,6 +184,9 @@ class Collater(object):
         # batch[0] = wave, mel, text, f0, speakerid
         batch_size = len(batch)
 
+        speaker_ids = ['' for _ in range(batch_size)]
+        utterance_names = ['' for _ in range(batch_size)]
+
         # sort by mel length
         lengths = [b[1].shape[1] for b in batch]
         batch_indexes = np.argsort(lengths)[::-1]
@@ -209,11 +210,14 @@ class Collater(object):
         paths = ['' for _ in range(batch_size)]
         waves = [None for _ in range(batch_size)]
         
-        for bid, (label, mel, text, ref_text, ref_mel, ref_label, path, wave) in enumerate(batch):
+        for bid, (spkr_id, utt_name, mel, text, ref_text, ref_mel, ref_label, path, wave) in enumerate(batch):
+            ...
+            speaker_ids[bid] = spkr_id
+            utterance_names[bid] = utt_name
             mel_size = mel.size(1)
             text_size = text.size(0)
             rtext_size = ref_text.size(0)
-            labels[bid] = label
+            labels[bid] = spkr_id
             mels[bid, :, :mel_size] = mel
             texts[bid, :text_size] = text
             ref_texts[bid, :rtext_size] = ref_text
@@ -227,9 +231,7 @@ class Collater(object):
             ref_labels[bid] = ref_label
             waves[bid] = wave
 
-        return waves, texts, input_lengths, ref_texts, ref_lengths, mels, output_lengths, ref_mels
-
-
+        return waves, texts, input_lengths, ref_texts, ref_lengths, mels, output_lengths, ref_mels, speaker_ids, utterance_names
 
 def build_dataloader(path_list,
                      root_path,
