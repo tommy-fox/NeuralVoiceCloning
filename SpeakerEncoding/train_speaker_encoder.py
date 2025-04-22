@@ -65,7 +65,7 @@ def train(config):
         # Training
         speaker_encoder.train()
         train_loss_meter = AverageMeter()
-        for anchor_sample, positive_sample, negative_sample, _ in tqdm(train_data):
+        for anchor_sample, positive_sample, negative_sample, _, _ in tqdm(train_data):
             anchor_sample = anchor_sample.to(device)
             positive_sample = positive_sample.to(device)
             negative_sample = negative_sample.to(device)
