@@ -45,8 +45,8 @@ if __name__ == "__main__":
     # with open(args.config_file, 'r') as file:
     #     config = yaml.safe_load(file)
 
-    input_dir = "/Users/tom/Documents/GA Tech/SP 25 Deep Learning/Final Project/NeuralVoiceCloning/SpeakerEncoding/vctk_data/wav48/"# config["dataset_path"]
-    output_dir = "/Users/tom/Documents/GA Tech/SP 25 Deep Learning/Final Project/NeuralVoiceCloning/SpeakerEncoding/vctk_data/wav24/"# config["preprocessed_dataset_path"]
+    input_dir = "SpeakerEncoding/vctk_data/wav48/"# config["dataset_path"]
+    output_dir = "SpeakerEncoding/vctk_data/wav24/"# config["preprocessed_dataset_path"]
     target_sample_rate = 24000# config["sample_rate"]
     audio_file_extension = ".flac"#config["data_file_extension"]
 

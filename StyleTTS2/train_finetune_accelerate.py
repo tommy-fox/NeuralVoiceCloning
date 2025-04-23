@@ -35,6 +35,10 @@ from optimizers import build_optimizer
 import os.path as osp
 import os
 
+from accelerate import Accelerator
+
+accelerator = Accelerator()
+
 # simple fix for dataparallel that allows access to class attributes
 class MyDataParallel(torch.nn.DataParallel):
     def __getattr__(self, name):
@@ -103,7 +107,7 @@ def main(config_path):
     optimizer_params = Munch(config['optimizer_params'])
     
     train_list, val_list = get_data_path_list(train_path, val_path)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = accelerator.device
 
     train_dataloader = build_dataloader(train_list,
                                         root_path,
@@ -253,8 +257,11 @@ def main(config_path):
                                 skip_update=slmadv_params.iter, 
                                 sig=slmadv_params.sig
                                )
-    
-    
+
+    model, optimizer, train_dataloader = accelerator.prepare(
+        model, optimizer, train_dataloader
+    )
+
     for epoch in range(start_epoch, epochs):
         running_loss = 0
         start_time = time.time()
@@ -273,7 +280,7 @@ def main(config_path):
         for i, batch in enumerate(train_dataloader):
             waves = batch[0]
             batch = [b.to(device) for b in batch[1:]]
-            texts, input_lengths, ref_texts, ref_lengths, mels, mel_input_length, ref_mels, speaker_ids, utterance_names = batch
+            texts, input_lengths, ref_texts, ref_lengths, mels, mel_input_length, ref_mels = batch
             with torch.no_grad():
                 mask = length_to_mask(mel_input_length // (2 ** n_down)).to(device)
                 mel_mask = length_to_mask(mel_input_length).to(device)
@@ -286,6 +293,7 @@ def main(config_path):
                         ref = []
                         for b in range(len(speaker_ids)):
                             embedding_key = f"{speaker_ids[b]}_{utterance_names[b]}"
+                            print("The key value is.....", embedding_key)
                             if embedding_key not in speaker_embedding_map:
                                 raise KeyError(f"Missing speaker embedding for key: {embedding_key}")
                             
@@ -438,7 +446,7 @@ def main(config_path):
 
             optimizer.zero_grad()
             d_loss = dl(wav.detach(), y_rec.detach()).mean()
-            d_loss.backward()
+            accelerator.backward(d_loss)
             optimizer.step('msd')
             optimizer.step('mpd')
 
@@ -486,7 +494,7 @@ def main(config_path):
                     loss_params.lambda_s2s * loss_s2s
             
             running_loss += loss_mel.item()
-            g_loss.backward()
+            accelerator.backward(g_loss)
             if torch.isnan(g_loss):
                 from IPython.core.debugger import set_trace
                 set_trace()
@@ -529,7 +537,7 @@ def main(config_path):
 
                     # SLM generator loss
                     optimizer.zero_grad()
-                    loss_gen_lm.backward()
+                    accelerator.backward(loss_gen_lm)
 
                     # compute the gradient norm
                     total_norm = {}
@@ -568,7 +576,7 @@ def main(config_path):
                     # SLM discriminator loss
                     if d_loss_slm != 0:
                         optimizer.zero_grad()
-                        d_loss_slm.backward(retain_graph=True)
+                        accelerator.backward(d_loss_slm)
                         optimizer.step('wd')
 
             iters = iters + 1
