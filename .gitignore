@@ -23,3 +23,8 @@ StyleTTS2/Utils/**/*.pth
 
 # Ignore the training data directory
 StyleTTS2/Data/
+SpeakerEncoding/vctk_data/
+
+# Ignore Recent Training
+StyleTTS2/pretrained/StyleTTS2-LJSpeech-04-22/
+
