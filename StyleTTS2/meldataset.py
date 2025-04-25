@@ -76,7 +76,6 @@ class FilePathDataset(torch.utils.data.Dataset):
                  OOD_data="Data/OOD_texts.txt",
                  min_length=50,
                  ):
-
         spect_params = SPECT_PARAMS
         mel_params = MEL_PARAMS
 
@@ -104,7 +103,7 @@ class FilePathDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.data_list)
 
-    def __getitem__(self, idx):        
+    def __getitem__(self, idx):   
         data = self.data_list[idx]
         path = data[0]
         
@@ -188,16 +187,15 @@ class Collater(object):
         utterance_names = ['' for _ in range(batch_size)]
 
         # sort by mel length
-        lengths = [b[1].shape[1] for b in batch]
+        lengths = [b[2].shape[1] for b in batch]
         batch_indexes = np.argsort(lengths)[::-1]
         batch = [batch[bid] for bid in batch_indexes]
 
-        nmels = batch[0][1].size(0)
-        max_mel_length = max([b[1].shape[1] for b in batch])
-        max_text_length = max([b[2].shape[0] for b in batch])
-        max_rtext_length = max([b[3].shape[0] for b in batch])
+        nmels = batch[0][2].size(0)
+        max_mel_length = max([b[2].shape[1] for b in batch])
+        max_text_length = max([b[3].shape[0] for b in batch])
+        max_rtext_length = max([b[4].shape[0] for b in batch])
 
-        labels = torch.zeros((batch_size)).long()
         mels = torch.zeros((batch_size, nmels, max_mel_length)).float()
         texts = torch.zeros((batch_size, max_text_length)).long()
         ref_texts = torch.zeros((batch_size, max_rtext_length)).long()
@@ -206,7 +204,6 @@ class Collater(object):
         ref_lengths = torch.zeros(batch_size).long()
         output_lengths = torch.zeros(batch_size).long()
         ref_mels = torch.zeros((batch_size, nmels, self.max_mel_length)).float()
-        ref_labels = torch.zeros((batch_size)).long()
         paths = ['' for _ in range(batch_size)]
         waves = [None for _ in range(batch_size)]
         
@@ -217,7 +214,6 @@ class Collater(object):
             mel_size = mel.size(1)
             text_size = text.size(0)
             rtext_size = ref_text.size(0)
-            labels[bid] = spkr_id
             mels[bid, :, :mel_size] = mel
             texts[bid, :text_size] = text
             ref_texts[bid, :rtext_size] = ref_text
@@ -228,7 +224,6 @@ class Collater(object):
             ref_mel_size = ref_mel.size(1)
             ref_mels[bid, :, :ref_mel_size] = ref_mel
             
-            ref_labels[bid] = ref_label
             waves[bid] = wave
 
         return waves, texts, input_lengths, ref_texts, ref_lengths, mels, output_lengths, ref_mels, speaker_ids, utterance_names
@@ -243,7 +238,6 @@ def build_dataloader(path_list,
                      device='cpu',
                      collate_config={},
                      dataset_config={}):
-    
     dataset = FilePathDataset(path_list, root_path, OOD_data=OOD_data, min_length=min_length, validation=validation, **dataset_config)
     collate_fn = Collater(**collate_config)
     data_loader = DataLoader(dataset,
