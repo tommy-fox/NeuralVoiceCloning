@@ -1,49 +1,49 @@
-wav24/p225/p225_001_mic1.flac|pliːz kɔːl stɛlə.|p225
-wav24/p225/p225_001_mic2.flac|pliːz kɔːl stɛlə.|p225
-wav24/p225/p225_002_mic1.flac|æsk hɜː tə bɹɪŋ ðiːz θɪŋz wɪð hɜː fɹʌmðə stoːɹ.|p225
-wav24/p225/p225_002_mic2.flac|æsk hɜː tə bɹɪŋ ðiːz θɪŋz wɪð hɜː fɹʌmðə stoːɹ.|p225
-wav24/p225/p225_003_mic1.flac|sɪks spuːnz ʌv fɹɛʃ snoʊ piːz, faɪv θɪk slæbz ʌv bluː tʃiːz, ænd meɪbiː ɐ snæk fɔːɹ hɜː bɹʌðɚ bɑːb.|p225
-wav24/p225/p225_003_mic2.flac|sɪks spuːnz ʌv fɹɛʃ snoʊ piːz, faɪv θɪk slæbz ʌv bluː tʃiːz, ænd meɪbiː ɐ snæk fɔːɹ hɜː bɹʌðɚ bɑːb.|p225
-wav24/p225/p225_004_mic1.flac|wiː ɑːlsoʊ niːd ɐ smɔːl plæstɪk sneɪk ænd ɐ bɪɡ tɔɪ fɹɑːɡ fɚðə kɪdz.|p225
-wav24/p225/p225_004_mic2.flac|wiː ɑːlsoʊ niːd ɐ smɔːl plæstɪk sneɪk ænd ɐ bɪɡ tɔɪ fɹɑːɡ fɚðə kɪdz.|p225
-wav24/p225/p225_005_mic1.flac|ʃiː kæn skuːp ðiːz θɪŋz ɪntʊ θɹiː ɹɛd bæɡz, ænd wiː wɪl ɡoʊ miːt hɜː wɛnzdeɪ æt ðə tɹeɪn steɪʃən.|p225
-wav24/p225/p225_005_mic2.flac|ʃiː kæn skuːp ðiːz θɪŋz ɪntʊ θɹiː ɹɛd bæɡz, ænd wiː wɪl ɡoʊ miːt hɜː wɛnzdeɪ æt ðə tɹeɪn steɪʃən.|p225
-wav24/p225/p225_007_mic1.flac|ðə ɹeɪnboʊ ɪz ɐ dɪvɪʒən ʌv waɪt laɪt ɪntʊ mɛni bjuːɾɪfəl kʌlɚz.|p225
-wav24/p225/p225_007_mic2.flac|ðə ɹeɪnboʊ ɪz ɐ dɪvɪʒən ʌv waɪt laɪt ɪntʊ mɛni bjuːɾɪfəl kʌlɚz.|p225
-wav24/p225/p225_008_mic1.flac|ðiːz teɪk ðə ʃeɪp əvə lɑːŋ ɹaʊnd ɑːɹtʃ, wɪð ɪts pæθ haɪ əbʌv, ænd ɪts tuː ɛndz ɐpæɹəntli bɪjɑːnd ðə hɚɹaɪzən.|p225
-wav24/p225/p225_008_mic2.flac|ðiːz teɪk ðə ʃeɪp əvə lɑːŋ ɹaʊnd ɑːɹtʃ, wɪð ɪts pæθ haɪ əbʌv, ænd ɪts tuː ɛndz ɐpæɹəntli bɪjɑːnd ðə hɚɹaɪzən.|p225
-wav24/p225/p225_009_mic1.flac|ðɛɹɪz , ɐkoːɹdɪŋ tə lɛdʒənd, ɐ bɔɪlɪŋ pɑːt ʌv ɡoʊld æt wʌn ɛnd.|p225
-wav24/p225/p225_009_mic2.flac|ðɛɹɪz , ɐkoːɹdɪŋ tə lɛdʒənd, ɐ bɔɪlɪŋ pɑːt ʌv ɡoʊld æt wʌn ɛnd.|p225
-wav24/p225/p225_010_mic1.flac|piːpəl lʊk, bʌt noʊwʌn ɛvɚ faɪndz ɪt.|p225
-wav24/p225/p225_010_mic2.flac|piːpəl lʊk, bʌt noʊwʌn ɛvɚ faɪndz ɪt.|p225
-wav24/p225/p225_011_mic1.flac|wɛn ɐ mæn lʊks fɔːɹ sʌmθɪŋ bɪjɑːnd hɪz ɹiːtʃ, hɪz fɹɛndz seɪ hiː ɪz lʊkɪŋ fɚðə pɑːt ʌv ɡoʊld æt ðɪ ɛnd ʌvðə ɹeɪnboʊ.|p225
-wav24/p225/p225_011_mic2.flac|wɛn ɐ mæn lʊks fɔːɹ sʌmθɪŋ bɪjɑːnd hɪz ɹiːtʃ, hɪz fɹɛndz seɪ hiː ɪz lʊkɪŋ fɚðə pɑːt ʌv ɡoʊld æt ðɪ ɛnd ʌvðə ɹeɪnboʊ.|p225
-wav24/p225/p225_012_mic1.flac|θɹuːaʊt ðə sɛntʃɚɹɪz piːpəl hæv ɛkspleɪnd ðə ɹeɪnboʊ ɪn vɛɹɪəs weɪz.|p225
-wav24/p225/p225_012_mic2.flac|θɹuːaʊt ðə sɛntʃɚɹɪz piːpəl hæv ɛkspleɪnd ðə ɹeɪnboʊ ɪn vɛɹɪəs weɪz.|p225
-wav24/p225/p225_016_mic1.flac|ðə noːɹsɪmɛn kənsɪdɚd ðə ɹeɪnboʊ æz ɐ bɹɪdʒ oʊvɚ wɪtʃ ðə ɡɑːdz pæst fɹʌm ɜːθ tə ðɛɹ hoʊm ɪnðə skaɪ.|p225
-wav24/p225/p225_016_mic2.flac|ðə noːɹsɪmɛn kənsɪdɚd ðə ɹeɪnboʊ æz ɐ bɹɪdʒ oʊvɚ wɪtʃ ðə ɡɑːdz pæst fɹʌm ɜːθ tə ðɛɹ hoʊm ɪnðə skaɪ.|p225
-wav24/p225/p225_018_mic1.flac|æɹɪstɑːɾəl θɔːt ðætðə ɹeɪnboʊ wʌz kɔːzd baɪ ɹɪflɛkʃən ʌvðə sʌnz ɹeɪz baɪ ðə ɹeɪn.|p225
-wav24/p225/p225_018_mic2.flac|æɹɪstɑːɾəl θɔːt ðætðə ɹeɪnboʊ wʌz kɔːzd baɪ ɹɪflɛkʃən ʌvðə sʌnz ɹeɪz baɪ ðə ɹeɪn.|p225
-wav24/p225/p225_019_mic1.flac|sɪns ðɛn fɪzɪsɪsts hæv faʊnd ðɐɾɪt ɪz nɑːt ɹɪflɛkʃən, bʌt ɹɪfɹækʃən baɪ ðə ɹeɪndɹɑːps wɪtʃ kɔːzᵻz ðə ɹeɪnboʊz.|p225
-wav24/p225/p225_019_mic2.flac|sɪns ðɛn fɪzɪsɪsts hæv faʊnd ðɐɾɪt ɪz nɑːt ɹɪflɛkʃən, bʌt ɹɪfɹækʃən baɪ ðə ɹeɪndɹɑːps wɪtʃ kɔːzᵻz ðə ɹeɪnboʊz.|p225
-wav24/p225/p225_020_mic1.flac|mɛni kɑːmplᵻkeɪɾᵻd aɪdiəz ɐbaʊt ðə ɹeɪnboʊ hɐvbɪn fɔːɹmd.|p225
-wav24/p225/p225_020_mic2.flac|mɛni kɑːmplᵻkeɪɾᵻd aɪdiəz ɐbaʊt ðə ɹeɪnboʊ hɐvbɪn fɔːɹmd.|p225
-wav24/p225/p225_022_mic1.flac|ðɪ æktʃuːəl pɹaɪmɚɹi ɹeɪnboʊ ɑːbzɜːvd ɪz sɛd təbi ðɪ ɪfɛkt ʌv suːpɚɹɪmpəzɪʃən əvə nʌmbɚɹ ʌv boʊz.|p225
-wav24/p225/p225_022_mic2.flac|ðɪ æktʃuːəl pɹaɪmɚɹi ɹeɪnboʊ ɑːbzɜːvd ɪz sɛd təbi ðɪ ɪfɛkt ʌv suːpɚɹɪmpəzɪʃən əvə nʌmbɚɹ ʌv boʊz.|p225
-wav24/p225/p225_023_mic1.flac|ɪf ðə ɹɛd ʌvðə sɛkənd boʊ fɔːlz əpɑːn ðə ɡɹiːn ʌvðə fɜːst, ðə ɹɪzʌlt ɪz tə ɡɪv ɐ boʊ wɪð ɐn ɐbnoːɹməli waɪd jɛloʊ bænd, sɪns ɹɛd ænd ɡɹiːn laɪt wɛn mɪkst fɔːɹm jɛloʊ.|p225
-wav24/p225/p225_023_mic2.flac|ɪf ðə ɹɛd ʌvðə sɛkənd boʊ fɔːlz əpɑːn ðə ɡɹiːn ʌvðə fɜːst, ðə ɹɪzʌlt ɪz tə ɡɪv ɐ boʊ wɪð ɐn ɐbnoːɹməli waɪd jɛloʊ bænd, sɪns ɹɛd ænd ɡɹiːn laɪt wɛn mɪkst fɔːɹm jɛloʊ.|p225
-wav24/p225/p225_024_mic1.flac|ðɪs ɪz ɐ vɛɹi kɑːmən taɪp ʌv boʊ, wʌn ʃoʊɪŋ meɪnli ɹɛd ænd jɛloʊ, wɪð lɪɾəl ɔːɹ noʊ ɡɹiːn ɔːɹ bluː.|p225
-wav24/p225/p225_024_mic2.flac|ðɪs ɪz ɐ vɛɹi kɑːmən taɪp ʌv boʊ, wʌn ʃoʊɪŋ meɪnli ɹɛd ænd jɛloʊ, wɪð lɪɾəl ɔːɹ noʊ ɡɹiːn ɔːɹ bluː.|p225
-wav24/p225/p225_027_mic1.flac|soʊ ɪz ðɐɾɪt, ðɛn?|p225
-wav24/p225/p225_027_mic2.flac|soʊ ɪz ðɐɾɪt, ðɛn?|p225
-wav24/p225/p225_028_mic1.flac|duː aɪ hæv ɐ feɪvɹɪt?|p225
-wav24/p225/p225_028_mic2.flac|duː aɪ hæv ɐ feɪvɹɪt?|p225
-wav24/p225/p225_029_mic1.flac|wʌt duː wiː duː?|p225
-wav24/p225/p225_029_mic2.flac|wʌt duː wiː duː?|p225
-wav24/p225/p225_030_mic1.flac|piːpəl kʌm ɪntʊ ðə boːɹdɚz fɚðə bjuːɾi ʌvðə bækɡɹaʊnd.|p225
-wav24/p225/p225_030_mic2.flac|piːpəl kʌm ɪntʊ ðə boːɹdɚz fɚðə bjuːɾi ʌvðə bækɡɹaʊnd.|p225
-wav24/p225/p225_033_mic1.flac|ɪts ɹiəli noʊ ɡɹeɪt sɚpɹaɪz, bɪkʌz ðə pɹaɪs dɪfɹəns ɪz soʊ mʌtʃ.|p225
-wav24/p225/p225_033_mic2.flac|ɪts ɹiəli noʊ ɡɹeɪt sɚpɹaɪz, bɪkʌz ðə pɹaɪs dɪfɹəns ɪz soʊ mʌtʃ.|p225
-wav24/p225/p225_037_mic1.flac|ɪn fækt, ðeɪ ɑːɹ ðə fjuːtʃɚɹ ʌv ɪnvɛstmənt.|p225
-wav24/p225/p225_037_mic2.flac|ɪn fækt, ðeɪ ɑːɹ ðə fjuːtʃɚɹ ʌv ɪnvɛstmənt.|p225
-wav24/p225/p225_038_mic1.flac|daɪvɪŋ ɪz noʊ pɑːɹt ʌv fʊtbɔːl.|p225
+wav24/p225/p225_001_mic1.wav|pliːz kɔːl stɛlə.|p225
+wav24/p225/p225_001_mic2.wav|pliːz kɔːl stɛlə.|p225
+wav24/p225/p225_002_mic1.wav|æsk hɜː tə bɹɪŋ ðiːz θɪŋz wɪð hɜː fɹʌmðə stoːɹ.|p225
+wav24/p225/p225_002_mic2.wav|æsk hɜː tə bɹɪŋ ðiːz θɪŋz wɪð hɜː fɹʌmðə stoːɹ.|p225
+wav24/p225/p225_003_mic1.wav|sɪks spuːnz ʌv fɹɛʃ snoʊ piːz, faɪv θɪk slæbz ʌv bluː tʃiːz, ænd meɪbiː ɐ snæk fɔːɹ hɜː bɹʌðɚ bɑːb.|p225
+wav24/p225/p225_003_mic2.wav|sɪks spuːnz ʌv fɹɛʃ snoʊ piːz, faɪv θɪk slæbz ʌv bluː tʃiːz, ænd meɪbiː ɐ snæk fɔːɹ hɜː bɹʌðɚ bɑːb.|p225
+wav24/p225/p225_004_mic1.wav|wiː ɑːlsoʊ niːd ɐ smɔːl plæstɪk sneɪk ænd ɐ bɪɡ tɔɪ fɹɑːɡ fɚðə kɪdz.|p225
+wav24/p225/p225_004_mic2.wav|wiː ɑːlsoʊ niːd ɐ smɔːl plæstɪk sneɪk ænd ɐ bɪɡ tɔɪ fɹɑːɡ fɚðə kɪdz.|p225
+wav24/p225/p225_005_mic1.wav|ʃiː kæn skuːp ðiːz θɪŋz ɪntʊ θɹiː ɹɛd bæɡz, ænd wiː wɪl ɡoʊ miːt hɜː wɛnzdeɪ æt ðə tɹeɪn steɪʃən.|p225
+wav24/p225/p225_005_mic2.wav|ʃiː kæn skuːp ðiːz θɪŋz ɪntʊ θɹiː ɹɛd bæɡz, ænd wiː wɪl ɡoʊ miːt hɜː wɛnzdeɪ æt ðə tɹeɪn steɪʃən.|p225
+wav24/p225/p225_007_mic1.wav|ðə ɹeɪnboʊ ɪz ɐ dɪvɪʒən ʌv waɪt laɪt ɪntʊ mɛni bjuːɾɪfəl kʌlɚz.|p225
+wav24/p225/p225_007_mic2.wav|ðə ɹeɪnboʊ ɪz ɐ dɪvɪʒən ʌv waɪt laɪt ɪntʊ mɛni bjuːɾɪfəl kʌlɚz.|p225
+wav24/p225/p225_008_mic1.wav|ðiːz teɪk ðə ʃeɪp əvə lɑːŋ ɹaʊnd ɑːɹtʃ, wɪð ɪts pæθ haɪ əbʌv, ænd ɪts tuː ɛndz ɐpæɹəntli bɪjɑːnd ðə hɚɹaɪzən.|p225
+wav24/p225/p225_008_mic2.wav|ðiːz teɪk ðə ʃeɪp əvə lɑːŋ ɹaʊnd ɑːɹtʃ, wɪð ɪts pæθ haɪ əbʌv, ænd ɪts tuː ɛndz ɐpæɹəntli bɪjɑːnd ðə hɚɹaɪzən.|p225
+wav24/p225/p225_009_mic1.wav|ðɛɹɪz , ɐkoːɹdɪŋ tə lɛdʒənd, ɐ bɔɪlɪŋ pɑːt ʌv ɡoʊld æt wʌn ɛnd.|p225
+wav24/p225/p225_009_mic2.wav|ðɛɹɪz , ɐkoːɹdɪŋ tə lɛdʒənd, ɐ bɔɪlɪŋ pɑːt ʌv ɡoʊld æt wʌn ɛnd.|p225
+wav24/p225/p225_010_mic1.wav|piːpəl lʊk, bʌt noʊwʌn ɛvɚ faɪndz ɪt.|p225
+wav24/p225/p225_010_mic2.wav|piːpəl lʊk, bʌt noʊwʌn ɛvɚ faɪndz ɪt.|p225
+wav24/p225/p225_011_mic1.wav|wɛn ɐ mæn lʊks fɔːɹ sʌmθɪŋ bɪjɑːnd hɪz ɹiːtʃ, hɪz fɹɛndz seɪ hiː ɪz lʊkɪŋ fɚðə pɑːt ʌv ɡoʊld æt ðɪ ɛnd ʌvðə ɹeɪnboʊ.|p225
+wav24/p225/p225_011_mic2.wav|wɛn ɐ mæn lʊks fɔːɹ sʌmθɪŋ bɪjɑːnd hɪz ɹiːtʃ, hɪz fɹɛndz seɪ hiː ɪz lʊkɪŋ fɚðə pɑːt ʌv ɡoʊld æt ðɪ ɛnd ʌvðə ɹeɪnboʊ.|p225
+wav24/p225/p225_012_mic1.wav|θɹuːaʊt ðə sɛntʃɚɹɪz piːpəl hæv ɛkspleɪnd ðə ɹeɪnboʊ ɪn vɛɹɪəs weɪz.|p225
+wav24/p225/p225_012_mic2.wav|θɹuːaʊt ðə sɛntʃɚɹɪz piːpəl hæv ɛkspleɪnd ðə ɹeɪnboʊ ɪn vɛɹɪəs weɪz.|p225
+wav24/p225/p225_016_mic1.wav|ðə noːɹsɪmɛn kənsɪdɚd ðə ɹeɪnboʊ æz ɐ bɹɪdʒ oʊvɚ wɪtʃ ðə ɡɑːdz pæst fɹʌm ɜːθ tə ðɛɹ hoʊm ɪnðə skaɪ.|p225
+wav24/p225/p225_016_mic2.wav|ðə noːɹsɪmɛn kənsɪdɚd ðə ɹeɪnboʊ æz ɐ bɹɪdʒ oʊvɚ wɪtʃ ðə ɡɑːdz pæst fɹʌm ɜːθ tə ðɛɹ hoʊm ɪnðə skaɪ.|p225
+wav24/p225/p225_018_mic1.wav|æɹɪstɑːɾəl θɔːt ðætðə ɹeɪnboʊ wʌz kɔːzd baɪ ɹɪflɛkʃən ʌvðə sʌnz ɹeɪz baɪ ðə ɹeɪn.|p225
+wav24/p225/p225_018_mic2.wav|æɹɪstɑːɾəl θɔːt ðætðə ɹeɪnboʊ wʌz kɔːzd baɪ ɹɪflɛkʃən ʌvðə sʌnz ɹeɪz baɪ ðə ɹeɪn.|p225
+wav24/p225/p225_019_mic1.wav|sɪns ðɛn fɪzɪsɪsts hæv faʊnd ðɐɾɪt ɪz nɑːt ɹɪflɛkʃən, bʌt ɹɪfɹækʃən baɪ ðə ɹeɪndɹɑːps wɪtʃ kɔːzᵻz ðə ɹeɪnboʊz.|p225
+wav24/p225/p225_019_mic2.wav|sɪns ðɛn fɪzɪsɪsts hæv faʊnd ðɐɾɪt ɪz nɑːt ɹɪflɛkʃən, bʌt ɹɪfɹækʃən baɪ ðə ɹeɪndɹɑːps wɪtʃ kɔːzᵻz ðə ɹeɪnboʊz.|p225
+wav24/p225/p225_020_mic1.wav|mɛni kɑːmplᵻkeɪɾᵻd aɪdiəz ɐbaʊt ðə ɹeɪnboʊ hɐvbɪn fɔːɹmd.|p225
+wav24/p225/p225_020_mic2.wav|mɛni kɑːmplᵻkeɪɾᵻd aɪdiəz ɐbaʊt ðə ɹeɪnboʊ hɐvbɪn fɔːɹmd.|p225
+wav24/p225/p225_022_mic1.wav|ðɪ æktʃuːəl pɹaɪmɚɹi ɹeɪnboʊ ɑːbzɜːvd ɪz sɛd təbi ðɪ ɪfɛkt ʌv suːpɚɹɪmpəzɪʃən əvə nʌmbɚɹ ʌv boʊz.|p225
+wav24/p225/p225_022_mic2.wav|ðɪ æktʃuːəl pɹaɪmɚɹi ɹeɪnboʊ ɑːbzɜːvd ɪz sɛd təbi ðɪ ɪfɛkt ʌv suːpɚɹɪmpəzɪʃən əvə nʌmbɚɹ ʌv boʊz.|p225
+wav24/p225/p225_023_mic1.wav|ɪf ðə ɹɛd ʌvðə sɛkənd boʊ fɔːlz əpɑːn ðə ɡɹiːn ʌvðə fɜːst, ðə ɹɪzʌlt ɪz tə ɡɪv ɐ boʊ wɪð ɐn ɐbnoːɹməli waɪd jɛloʊ bænd, sɪns ɹɛd ænd ɡɹiːn laɪt wɛn mɪkst fɔːɹm jɛloʊ.|p225
+wav24/p225/p225_023_mic2.wav|ɪf ðə ɹɛd ʌvðə sɛkənd boʊ fɔːlz əpɑːn ðə ɡɹiːn ʌvðə fɜːst, ðə ɹɪzʌlt ɪz tə ɡɪv ɐ boʊ wɪð ɐn ɐbnoːɹməli waɪd jɛloʊ bænd, sɪns ɹɛd ænd ɡɹiːn laɪt wɛn mɪkst fɔːɹm jɛloʊ.|p225
+wav24/p225/p225_024_mic1.wav|ðɪs ɪz ɐ vɛɹi kɑːmən taɪp ʌv boʊ, wʌn ʃoʊɪŋ meɪnli ɹɛd ænd jɛloʊ, wɪð lɪɾəl ɔːɹ noʊ ɡɹiːn ɔːɹ bluː.|p225
+wav24/p225/p225_024_mic2.wav|ðɪs ɪz ɐ vɛɹi kɑːmən taɪp ʌv boʊ, wʌn ʃoʊɪŋ meɪnli ɹɛd ænd jɛloʊ, wɪð lɪɾəl ɔːɹ noʊ ɡɹiːn ɔːɹ bluː.|p225
+wav24/p225/p225_027_mic1.wav|soʊ ɪz ðɐɾɪt, ðɛn?|p225
+wav24/p225/p225_027_mic2.wav|soʊ ɪz ðɐɾɪt, ðɛn?|p225
+wav24/p225/p225_028_mic1.wav|duː aɪ hæv ɐ feɪvɹɪt?|p225
+wav24/p225/p225_028_mic2.wav|duː aɪ hæv ɐ feɪvɹɪt?|p225
+wav24/p225/p225_029_mic1.wav|wʌt duː wiː duː?|p225
+wav24/p225/p225_029_mic2.wav|wʌt duː wiː duː?|p225
+wav24/p225/p225_030_mic1.wav|piːpəl kʌm ɪntʊ ðə boːɹdɚz fɚðə bjuːɾi ʌvðə bækɡɹaʊnd.|p225
+wav24/p225/p225_030_mic2.wav|piːpəl kʌm ɪntʊ ðə boːɹdɚz fɚðə bjuːɾi ʌvðə bækɡɹaʊnd.|p225
+wav24/p225/p225_033_mic1.wav|ɪts ɹiəli noʊ ɡɹeɪt sɚpɹaɪz, bɪkʌz ðə pɹaɪs dɪfɹəns ɪz soʊ mʌtʃ.|p225
+wav24/p225/p225_033_mic2.wav|ɪts ɹiəli noʊ ɡɹeɪt sɚpɹaɪz, bɪkʌz ðə pɹaɪs dɪfɹəns ɪz soʊ mʌtʃ.|p225
+wav24/p225/p225_037_mic1.wav|ɪn fækt, ðeɪ ɑːɹ ðə fjuːtʃɚɹ ʌv ɪnvɛstmənt.|p225
+wav24/p225/p225_037_mic2.wav|ɪn fækt, ðeɪ ɑːɹ ðə fjuːtʃɚɹ ʌv ɪnvɛstmənt.|p225
+wav24/p225/p225_038_mic1.wav|daɪvɪŋ ɪz noʊ pɑːɹt ʌv fʊtbɔːl.|p225
