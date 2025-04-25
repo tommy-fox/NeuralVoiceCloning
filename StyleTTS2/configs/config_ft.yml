@@ -17,7 +17,7 @@ PLBERT_dir: 'StyleTTS2/Utils/PLBERT/'
 data_params:
   train_data: "StyleTTS2/vctk_for_style_tts/train.txt"
   val_data: "StyleTTS2//vctk_for_style_tts/val.txt"
-  root_path: "SpeakerEncoding/vctk_data"
+  root_path: "StyleTTS2/vctk_data"
   OOD_data: "StyleTTS2//vctk_for_style_tts/OOD_texts.txt"
   min_length: 50 # sample until texts with this size are obtained for OOD texts
 
@@ -29,7 +29,7 @@ preprocess_params:
     hop_length: 300
 
 model_params:
-  multispeaker: true
+  multispeaker: True
 
   dim_in: 64 
   hidden_dim: 512
@@ -92,7 +92,7 @@ loss_params:
     lambda_sty: 1. # style reconstruction loss
     lambda_diff: 1. # score matching loss
     
-    diff_epoch: 10 # style diffusion starting epoch
+    diff_epoch: 0 # style diffusion starting epoch
     joint_epoch: 30 # joint training starting epoch
 
 optimizer_params:
