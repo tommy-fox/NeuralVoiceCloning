@@ -4,7 +4,7 @@ Trains a simple neural network to classify
 speaker IDs given their speaker embeddings.
 This is intended to assess the performance of the speaker embedding model,
 where the classifier will show high accuracy when the speaker embeddings
-are well-defined for each speaker
+are well-defined for each speaker.
 '''
 import yaml, argparse, time, torch
 from tqdm import tqdm
@@ -12,14 +12,23 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, random_split, TensorDataset
 from models.speaker_classifier import SpeakerEmbeddingClassifier
+from sklearn.preprocessing import LabelEncoder
 
 def train(config):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Load speaker embeddings and labels from file
     data = torch.load(config['speaker_embedding_path'])
+
     speaker_embeddings, speaker_labels = data['speaker_embeddings'], data['speaker_labels']
-    dataset = TensorDataset(speaker_embeddings, speaker_labels)
+    
+    # Convert list of labels to a Long Tensor
+    if isinstance(speaker_labels, list):
+        label_encoder = LabelEncoder()
+        speaker_labels = label_encoder.fit_transform(speaker_labels)
+        speaker_labels = torch.LongTensor(speaker_labels)
+
+    speaker_embedding_dataset = TensorDataset(speaker_embeddings, speaker_labels)
 
     # Split data into train/validation/test
     model_config = config['speaker_classifier_model']
@@ -28,17 +37,17 @@ def train(config):
     n_val = int(model_config['val_split'] * num_samples)
     n_test = num_samples - n_train - n_val
 
-    train_data, val_data, test_data = random_split(dataset, [n_train, n_val, n_test], generator=torch.Generator().manual_seed(42))
+    train_data, val_data, test_data = random_split(speaker_embedding_dataset, [n_train, n_val, n_test], generator=torch.Generator().manual_seed(42))
 
     # Load train/validation/test data into DataLoaders
     train_loader = DataLoader(train_data, batch_size=model_config['batch_size'], shuffle=True, num_workers=2)
     val_loader = DataLoader(val_data, batch_size=model_config['batch_size'], shuffle=False, num_workers=2)
-    test_loader = DataLoader(test_data, batch_size=model_config['batch_size'], shuffle=False, num_workers=2)
+    # test_loader = DataLoader(test_data, batch_size=model_config['batch_size'], shuffle=False, num_workers=2)
 
     # Set up classifier model, loss, and optimizer
     speaker_embedding_dim = config['speaker_encoder_model']['embedding_out_dim']
     num_speakers = len(torch.unique(speaker_labels))
-    speaker_classifier = SpeakerEmbeddingClassifier(embedding_dim=speaker_embedding_dim, classifier_dim=128, num_speakers=num_speakers)
+    speaker_classifier = SpeakerEmbeddingClassifier(embedding_dim=speaker_embedding_dim, num_speakers=num_speakers)
 
     loss_function = nn.CrossEntropyLoss()
     optimizer = optim.Adam(speaker_classifier.parameters(), lr=model_config['lr'])
