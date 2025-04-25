@@ -279,36 +279,37 @@ def main(config_path):
 
         for i, batch in enumerate(train_dataloader):
             waves = batch[0]
-            batch = [b.to(device) for b in batch[1:]]
-            texts, input_lengths, ref_texts, ref_lengths, mels, mel_input_length, ref_mels = batch
+            batch = [b.to(device) if isinstance(b, torch.Tensor) else b for b in batch[1:]]
+            texts, input_lengths, ref_texts, ref_lengths, mels, mel_input_length, ref_mels, speaker_ids, utterance_names = batch
             with torch.no_grad():
                 mask = length_to_mask(mel_input_length // (2 ** n_down)).to(device)
                 mel_mask = length_to_mask(mel_input_length).to(device)
                 text_mask = length_to_mask(input_lengths).to(texts.device)
 
                 # BEGIN CUSTOM EMBEDDINGS
-                # compute reference styles
                 if multispeaker and epoch >= diff_epoch:
                     if speaker_embedding_map is not None:
-                        ref = []
+                        ref_ss = []
                         for b in range(len(speaker_ids)):
                             embedding_key = f"{speaker_ids[b]}_{utterance_names[b]}"
-                            print("The key value is.....", embedding_key)
                             if embedding_key not in speaker_embedding_map:
                                 raise KeyError(f"Missing speaker embedding for key: {embedding_key}")
-                            
-                            # Optional: Add debug-level log to compare audio shape to expected embedding use
-                            audio_len = len(waves[b])
-                            if audio_len < 5000:
-                                print(f"[WARN] Waveform for {embedding_key} is suspiciously short ({audio_len} samples).")
 
-                            ref.append(speaker_embedding_map[embedding_key].to(device))
-                        ref = torch.stack(ref)
+                            emb = speaker_embedding_map[embedding_key].to(device)  # your custom embedding
+                            ref_ss.append(emb)
+                        ref_ss = torch.cat(ref_ss, dim=0)
+
+                        # compute prosodic style
+                        ref_sp = model.predictor_encoder(ref_mels.unsqueeze(1))
+
+                        # concatenate acoustic style and prosodic style
+                        ref = torch.cat([ref_ss, ref_sp], dim=1)
+
                     else:
                         ref_ss = model.style_encoder(ref_mels.unsqueeze(1))
                         ref_sp = model.predictor_encoder(ref_mels.unsqueeze(1))
                         ref = torch.cat([ref_ss, ref_sp], dim=1)
-                # END CUSTOM EMBEDDINGS
+                    # END CUSTOM EMBEDDINGS
                 
             try:
                 ppgs, s2s_pred, s2s_attn = model.text_aligner(mels, mask, texts)
