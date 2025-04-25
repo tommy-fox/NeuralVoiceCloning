@@ -37,5 +37,5 @@ data:
   preprocessed_dataset_path: "./preprocessed_vctk_data"
 
 checkpoint_save_dir: "./checkpoints"
-checkpoint_path: "./checkpoints/speaker_encoder_epoch37_vctk.pt"
-speaker_embedding_path: "./speaker_embeddings/generated_speaker_embeddings.pt"
+checkpoint_path: "./checkpoints/encoder_epoch814.pt"
+speaker_embedding_path: "./speaker_embeddings/generated_speaker_embeddings_epoch814.pt"
