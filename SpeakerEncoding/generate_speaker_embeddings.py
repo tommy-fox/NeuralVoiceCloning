@@ -1,12 +1,3 @@
-'''
-generate_speaker_embeddings.py
-Loads a trained SpeakerEncoder model from a checkpoint, 
-generates an embedding for each sample in a given dataset,
-saves a map of the speaker_id to their average embedding for downstream plotting,
-and saves a map of the speaker_id + utterance_id to the corresponding embedding
-for downstream StyleTTS tuning
-'''
-
 import yaml, argparse, torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
@@ -35,14 +26,15 @@ def generate_speaker_embeddings(config):
     speaker_encoder.load_state_dict(torch.load(checkpoint_path, map_location=device))
     speaker_encoder.eval()
 
-    # Load and preprocess audio data
+    # Load audio data
     audio_data = AudioTripletLoader(config)
     audio_data_loader = DataLoader(audio_data, batch_size=1, shuffle=False, num_workers=2)
 
-    # For speaker-level mean
-    speaker_to_embeddings = defaultdict(list)
+    # Store multiple embeddings per speaker for plotting
+    all_embeddings = []
+    all_labels = []
 
-    # For utterance-level
+    # For utterance-level access
     utterance_to_embedding = {}
 
     with torch.no_grad():
@@ -50,33 +42,26 @@ def generate_speaker_embeddings(config):
             anchor = anchor.to(device)  # [1, 1, n_mels, n_frames]
             embedding = speaker_encoder(anchor).squeeze(0).cpu()  # [embedding_dim]
 
-            # speaker-level (for plotting)
-            speaker_to_embeddings[anchor_id[0]].append(embedding)
+            # Store per-speaker (many embeddings)
+            all_embeddings.append(embedding)
+            all_labels.append(anchor_id[0])  # Keep as str
 
-            # utterance-level (for TTS finetune)
-            key = f"{anchor_id[0]}_{utterance_id[0]}"
-            utterance_to_embedding[key] = embedding
+            # Store per-utterance
+            anchor_id_utterance_id_key = f"{anchor_id[0]}_{utterance_id[0]}"
+            utterance_to_embedding[anchor_id_utterance_id_key] = embedding
 
-    # Compute mean embeddings for each speaker
-    speaker_mean_embeddings = []
-    speaker_labels = []
-
-    for speaker, embeddings in speaker_to_embeddings.items():
-        stacked = torch.stack(embeddings)
-        speaker_mean_embeddings.append(stacked.mean(dim=0))
-        speaker_labels.append(speaker)
-
-    # Save speaker-level file
-    speaker_embeddings_tensor = torch.stack(speaker_mean_embeddings)
-    speaker_labels_tensor = speaker_labels  # Keep as list of strings
+    # Save all per-speaker embeddings (for t-SNE, etc.)
+    speaker_embeddings_tensor = torch.stack(all_embeddings)
+    speaker_labels_list = all_labels 
 
     torch.save({
         "speaker_embeddings": speaker_embeddings_tensor,
-        "speaker_labels": speaker_labels_tensor
+        "speaker_labels": speaker_labels_list
     }, output_path_base)
-    print(f"Speaker-level embeddings saved to {output_path_base}")
 
-    # Save utterance-level file
+    print(f"All speaker embeddings saved to {output_path_base}")
+
+    # Save utterance-level embeddings for training, keys are anchor id + utterance id
     torch.save(utterance_to_embedding, utterance_level_path)
     print(f"Utterance-level embeddings saved to {utterance_level_path}")
 
