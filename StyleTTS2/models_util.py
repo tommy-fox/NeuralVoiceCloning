@@ -696,10 +696,15 @@ def build_model(args, text_aligner, pitch_extractor, bert):
 def load_checkpoint(model, optimizer, path, load_only_params=True, ignore_modules=[]):
     state = torch.load(path, map_location='cpu')
     params = state['net']
+
     for key in model:
+        if key == 'decoder':
+            print(f"Skipping loading weights for {key} due to architecture mismatch")
+            continue
         if key in params and key not in ignore_modules:
-            print('%s loaded' % key)
+            print(f'{key} loaded')
             model[key].load_state_dict(params[key], strict=False)
+
     _ = [model[key].eval() for key in model]
     
     if not load_only_params:
