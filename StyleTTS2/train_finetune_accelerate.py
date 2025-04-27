@@ -289,15 +289,48 @@ def main(config_path):
                 # BEGIN CUSTOM EMBEDDINGS
                 if multispeaker and epoch >= diff_epoch:
                     if speaker_embedding_map is not None:
+                        # ref_ss = []
+                        # for b in range(len(speaker_ids)):
+                        #     embedding_key = f"{speaker_ids[b]}_{utterance_names[b]}"
+                        #     if embedding_key not in speaker_embedding_map:
+                        #         raise KeyError(f"Missing speaker embedding for key: {embedding_key}")
+
+                        #     emb = speaker_embedding_map[embedding_key].to(device)  # your custom embedding
+                        #     ref_ss.append(emb)
+                        # ref_ss = torch.cat(ref_ss, dim=0)
+
+                        ##### BEGIN FILTERING...
+                        ###
+                        # Filter for valid speaker embeddings
+                        valid_indices = []
                         ref_ss = []
+
                         for b in range(len(speaker_ids)):
                             embedding_key = f"{speaker_ids[b]}_{utterance_names[b]}"
-                            if embedding_key not in speaker_embedding_map:
-                                raise KeyError(f"Missing speaker embedding for key: {embedding_key}")
+                            if embedding_key in speaker_embedding_map:
+                                ref_ss.append(speaker_embedding_map[embedding_key].to(device))
+                                valid_indices.append(b)
+                            # else:
+                            #     print(f"Skipping missing embedding: {embedding_key}")
 
-                            emb = speaker_embedding_map[embedding_key].to(device)  # your custom embedding
-                            ref_ss.append(emb)
+                        if len(valid_indices) == 0:
+                            # print("All items in batch missing speaker embeddings. Skipping batch.")
+                            continue
+
+                        # Apply filtering to all batch components
+                        waves = [waves[i] for i in valid_indices]
+                        texts = texts[valid_indices]
+                        input_lengths = input_lengths[valid_indices]
+                        ref_texts = ref_texts[valid_indices]
+                        ref_lengths = ref_lengths[valid_indices]
+                        mels = mels[valid_indices]
+                        mel_input_length = mel_input_length[valid_indices]
+                        ref_mels = ref_mels[valid_indices]
+                        speaker_ids = [speaker_ids[i] for i in valid_indices]
+                        utterance_names = [utterance_names[i] for i in valid_indices]
+
                         ref_ss = torch.cat(ref_ss, dim=0)
+                        ##### END FILTERING
 
                         # compute prosodic style
                         ref_sp = model.predictor_encoder(ref_mels.unsqueeze(1))
