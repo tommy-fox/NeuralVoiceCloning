@@ -4,6 +4,39 @@ import torch.nn.functional as F
 import torchaudio
 from transformers import AutoModel
 
+
+class SafeMelSpectrogram(torch.nn.Module):
+    """MelSpectrogram that avoids torch.stft return_complex=True,
+    which triggers CUDA driver errors on some CUDA 11.x / V100 setups."""
+
+    def __init__(self, sample_rate=24000, n_fft=1024, win_length=600,
+                 hop_length=120, window_fn=torch.hann_window, n_mels=128):
+        super().__init__()
+        self.n_fft = n_fft
+        self.hop_length = hop_length
+        self.win_length = win_length
+        self.register_buffer('window', window_fn(win_length))
+        mel_fb = torchaudio.functional.melscale_fbanks(
+            n_freqs=n_fft // 2 + 1,
+            f_min=0.0,
+            f_max=float(sample_rate // 2),
+            n_mels=n_mels,
+            sample_rate=sample_rate,
+        )
+        self.register_buffer('mel_fb', mel_fb)
+
+    def forward(self, waveform):
+        # torch.stft expects 1D or 2D input; squeeze channel dim if present
+        if waveform.dim() == 3:
+            waveform = waveform.squeeze(1)
+        x_stft = torch.stft(waveform, self.n_fft, self.hop_length,
+                             self.win_length, self.window,
+                             return_complex=False)
+        power = x_stft[..., 0] ** 2 + x_stft[..., 1] ** 2
+        mel = torch.matmul(power.transpose(-1, -2), self.mel_fb).transpose(-1, -2)
+        return mel
+
+
 class SpectralConvergengeLoss(torch.nn.Module):
     """Spectral convergence loss module."""
 
@@ -30,7 +63,7 @@ class STFTLoss(torch.nn.Module):
         self.fft_size = fft_size
         self.shift_size = shift_size
         self.win_length = win_length
-        self.to_mel = torchaudio.transforms.MelSpectrogram(sample_rate=24000, n_fft=fft_size, win_length=win_length, hop_length=shift_size, window_fn=window)
+        self.to_mel = SafeMelSpectrogram(sample_rate=24000, n_fft=fft_size, win_length=win_length, hop_length=shift_size, window_fn=window)
 
         self.spectral_convergenge_loss = SpectralConvergengeLoss()
 
@@ -195,15 +228,20 @@ class WavLMLoss(torch.nn.Module):
     def __init__(self, model, wd, model_sr, slm_sr=16000):
         super(WavLMLoss, self).__init__()
         self.wavlm = AutoModel.from_pretrained(model)
+        self.wavlm.requires_grad_(False)
         self.wd = wd
-        self.resample = torchaudio.transforms.Resample(model_sr, slm_sr)
+        self.model_sr = model_sr
+        self.slm_sr = slm_sr
+
+    def resample(self, x):
+        return torchaudio.functional.resample(x, self.model_sr, self.slm_sr)
      
     def forward(self, wav, y_rec):
         with torch.no_grad():
             wav_16 = self.resample(wav)
             wav_embeddings = self.wavlm(input_values=wav_16, output_hidden_states=True).hidden_states
         y_rec_16 = self.resample(y_rec)
-        y_rec_embeddings = self.wavlm(input_values=y_rec_16.squeeze(), output_hidden_states=True).hidden_states
+        y_rec_embeddings = self.wavlm(input_values=y_rec_16, output_hidden_states=True).hidden_states
 
         floss = 0
         for er, eg in zip(wav_embeddings, y_rec_embeddings):

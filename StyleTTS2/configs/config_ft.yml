@@ -4,21 +4,21 @@ log_interval: 10
 device: "cuda"
 epochs: 50 # number of finetuning epoch (1 hour of data)
 batch_size: 2
-max_len: 350 # maximum number of frames
-pretrained_model: "StyleTTS2/pretrained/StyleTTS2-LibriTTS/epochs_2nd_00020.pth"
+max_len: 300 # maximum number of frames
+pretrained_model: "/home/hice1/tfox35/scratch/StyleTTS2/pretrained/StyleTTS2-LibriTTS/epochs_2nd_00020.pth"
 second_stage_load_pretrained: true # set to true if the pre-trained model is for 2nd stage
 load_only_params: true # set to true if do not want to load epoch numbers and optimizer parameters
 
-F0_path: "StyleTTS2/Utils/JDC/bst.t7"
-ASR_config: "StyleTTS2/Utils/ASR/config.yml"
-ASR_path: "StyleTTS2/Utils/ASR/epoch_00080.pth"
-PLBERT_dir: 'StyleTTS2/Utils/PLBERT/'
+F0_path: "/home/hice1/tfox35/scratch/StyleTTS2/Utils/JDC/bst.t7"
+ASR_config: "/home/hice1/tfox35/scratch/StyleTTS2/Utils/ASR/config.yml"
+ASR_path: "/home/hice1/tfox35/scratch/StyleTTS2/Utils/ASR/epoch_00080.pth"
+PLBERT_dir: '/home/hice1/tfox35/scratch/StyleTTS2/Utils/PLBERT/'
 
 data_params:
-  train_data: "StyleTTS2/vctk_for_style_tts/train.txt"
-  val_data: "StyleTTS2//vctk_for_style_tts/val.txt"
-  root_path: "StyleTTS2/vctk_data"
-  OOD_data: "StyleTTS2//vctk_for_style_tts/OOD_texts.txt"
+  train_data: "/home/hice1/tfox35/scratch/StyleTTS2/vctk_for_style_tts/train.txt"
+  val_data: "/home/hice1/tfox35/scratch/StyleTTS2/vctk_for_style_tts/val.txt"
+  root_path: "/home/hice1/tfox35/scratch/speakerembedding/preprocessed_vctk_data_24k"
+  OOD_data: "/home/hice1/tfox35/scratch/StyleTTS2/vctk_for_style_tts/OOD_texts.txt"
   min_length: 50 # sample until texts with this size are obtained for OOD texts
 
 preprocess_params:
@@ -102,7 +102,7 @@ optimizer_params:
   
 slmadv_params:
   min_len: 400 # minimum length of samples
-  max_len: 500 # maximum length of samples
+  max_len: 400 # maximum length of samples
   batch_percentage: 0.5 # to prevent out of memory, only use half of the original batch size
   iter: 10 # update the discriminator every this iterations of generator update
   thresh: 5 # gradient norm above which the gradient is scaled

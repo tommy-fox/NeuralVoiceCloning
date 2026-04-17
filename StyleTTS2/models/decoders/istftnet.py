@@ -86,20 +86,27 @@ class TorchSTFT(torch.nn.Module):
         self.filter_length = filter_length
         self.hop_length = hop_length
         self.win_length = win_length
-        self.window = torch.from_numpy(get_window(window, win_length, fftbins=True).astype(np.float32))
+        self.register_buffer('window', torch.from_numpy(get_window(window, win_length, fftbins=True).astype(np.float32)))
 
     def transform(self, input_data):
         forward_transform = torch.stft(
             input_data,
-            self.filter_length, self.hop_length, self.win_length, window=self.window.to(input_data.device),
-            return_complex=True)
+            self.filter_length, self.hop_length, self.win_length, window=self.window,
+            return_complex=False)
+        real = forward_transform[..., 0]
+        imag = forward_transform[..., 1]
 
-        return torch.abs(forward_transform), torch.angle(forward_transform)
+        magnitude = torch.sqrt(real ** 2 + imag ** 2 + 1e-9)
+        phase = torch.atan2(imag, real)
+        return magnitude, phase
 
     def inverse(self, magnitude, phase):
+        real = magnitude * torch.cos(phase)
+        imag = magnitude * torch.sin(phase)
+        stft_matrix = torch.stack([real, imag], dim=-1)
         inverse_transform = torch.istft(
-            magnitude * torch.exp(phase * 1j),
-            self.filter_length, self.hop_length, self.win_length, window=self.window.to(magnitude.device))
+            torch.view_as_complex(stft_matrix.contiguous()),
+            self.filter_length, self.hop_length, self.win_length, window=self.window)
 
         return inverse_transform.unsqueeze(-2)  # unsqueeze to stay consistent with conv_transpose1d implementation
 
@@ -503,9 +510,9 @@ class Decoder(nn.Module):
             downlist = [0, 3, 7, 15]
             N_down = downlist[random.randint(0, 3)]
             if F0_down:
-                F0_curve = nn.functional.conv1d(F0_curve.unsqueeze(1), torch.ones(1, 1, F0_down).to('cuda'), padding=F0_down//2).squeeze(1) / F0_down
+                F0_curve = nn.functional.conv1d(F0_curve.unsqueeze(1), torch.ones(1, 1, F0_down, device=F0_curve.device), padding=F0_down//2).squeeze(1) / F0_down
             if N_down:
-                N = nn.functional.conv1d(N.unsqueeze(1), torch.ones(1, 1, N_down).to('cuda'), padding=N_down//2).squeeze(1)  / N_down
+                N = nn.functional.conv1d(N.unsqueeze(1), torch.ones(1, 1, N_down, device=N.device), padding=N_down//2).squeeze(1)  / N_down
 
         
         F0 = self.F0_conv(F0_curve.unsqueeze(1))

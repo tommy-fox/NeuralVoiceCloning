@@ -20,8 +20,8 @@ def format_vctk(vctk_root, output_dir, val_split=0.05):
         txt_files = sorted([f for f in os.listdir(speaker_txt_dir) if f.endswith('.txt')])
         for txt_file in txt_files:
             base_name = os.path.splitext(txt_file)[0]
-            wav_file_mic1 = os.path.join(speaker_audio_dir, base_name + '_mic1.flac')
-            wav_file_mic2 = os.path.join(speaker_audio_dir, base_name + '_mic2.flac')
+            wav_file_mic1 = os.path.join(speaker_audio_dir, base_name + '_mic1.wav')
+            wav_file_mic2 = os.path.join(speaker_audio_dir, base_name + '_mic2.wav')
             txt_path = os.path.join(speaker_txt_dir, txt_file)
 
             if not os.path.exists(wav_file_mic1) or not os.path.exists(wav_file_mic2):
@@ -45,7 +45,7 @@ def format_vctk(vctk_root, output_dir, val_split=0.05):
         backend='espeak',
         strip=True,
         preserve_punctuation=True,
-        with_stress=False,
+        with_stress=True,
     )
 
     print("Rebuilding train/val/OOD entries with phonemized text...")

@@ -55,12 +55,14 @@ logger.addHandler(handler)
 @click.command()
 @click.option('-p', '--config_path', default='configs/config_ft.yml', type=str)
 def main(config_path):
+    #config_path = "/home/hice1/tfox35/scratch/StyleTTS2/Configs/config_ft.yml"
     config = yaml.safe_load(open(config_path))
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"using device {device}")
 
     # BEGIN CUSTOM EMBEDDINGS
     # Load external speaker embeddings if specified
-    custom_embed_path = "./StyleTTS2/CustomEmbeddings/generated_speaker_embeddings_epoch814_utterance.pt" 
+    custom_embed_path = "/Users/tom/Documents/GA Tech/SP 25 Deep Learning/Final Project/NeuralVoiceCloning/StyleTTS2/CustomEmbeddings/generated_speaker_embeddings_epoch814_utterance.pt" 
     speaker_embedding_map = None
     if custom_embed_path:
         print("Loading external speaker embeddings...")
@@ -256,6 +258,7 @@ def main(config_path):
     
     
     for epoch in range(start_epoch, epochs):
+        print(f"epoch {epoch}")
         running_loss = 0
         start_time = time.time()
 
@@ -271,21 +274,45 @@ def main(config_path):
         model.mpd.train()
 
         for i, batch in enumerate(train_dataloader):
+            print(f"sample {i}")
             waves = batch[0]
             batch = [b.to(device) if isinstance(b, torch.Tensor) else b for b in batch[1:]]
             texts, input_lengths, ref_texts, ref_lengths, mels, mel_input_length, ref_mels, speaker_ids, utterance_names = batch
             # BEGIN CUSTOM EMBEDDINGS
             if multispeaker and epoch >= diff_epoch:
                 if speaker_embedding_map is not None:
+                    ##### BEGIN FILTERING...
+                    ###
+                    # Filter for valid speaker embeddings
+                    valid_indices = []
                     ref_ss = []
+
                     for b in range(len(speaker_ids)):
                         embedding_key = f"{speaker_ids[b]}_{utterance_names[b]}"
-                        if embedding_key not in speaker_embedding_map:
-                            raise KeyError(f"Missing speaker embedding for key: {embedding_key}")
+                        if embedding_key in speaker_embedding_map:
+                            ref_ss.append(speaker_embedding_map[embedding_key].to(device))
+                            valid_indices.append(b)
+                        # else:
+                        #     print(f"Skipping missing embedding: {embedding_key}")
 
-                        emb = speaker_embedding_map[embedding_key].to(device)  # your custom embedding
-                        ref_ss.append(emb)
+                    if len(valid_indices) == 0:
+                        # print("All items in batch missing speaker embeddings. Skipping batch.")
+                        continue
+
+                    # Apply filtering to all batch components
+                    waves = [waves[i] for i in valid_indices]
+                    texts = texts[valid_indices]
+                    input_lengths = input_lengths[valid_indices]
+                    ref_texts = ref_texts[valid_indices]
+                    ref_lengths = ref_lengths[valid_indices]
+                    mels = mels[valid_indices]
+                    mel_input_length = mel_input_length[valid_indices]
+                    ref_mels = ref_mels[valid_indices]
+                    speaker_ids = [speaker_ids[i] for i in valid_indices]
+                    utterance_names = [utterance_names[i] for i in valid_indices]
+
                     ref_ss = torch.cat(ref_ss, dim=0)
+                    ##### END FILTERING
 
                     # compute prosodic style
                     ref_sp = model.predictor_encoder(ref_mels.unsqueeze(1))
@@ -297,7 +324,7 @@ def main(config_path):
                     ref_ss = model.style_encoder(ref_mels.unsqueeze(1))
                     ref_sp = model.predictor_encoder(ref_mels.unsqueeze(1))
                     ref = torch.cat([ref_ss, ref_sp], dim=1)
-                # END CUSTOM EMBEDDINGS
+                    # END CUSTOM EMBEDDINGS
                 
             try:
                 ppgs, s2s_pred, s2s_attn = model.text_aligner(mels, mask, texts)
@@ -321,6 +348,7 @@ def main(config_path):
 
             d_gt = s2s_attn_mono.sum(axis=-1).detach()
 
+            print("computing style")
             # compute the style of the entire utterance
             # this operation cannot be done in batch because of the avgpool layer (may need to work on masked avgpool)
             ss = []
@@ -337,9 +365,11 @@ def main(config_path):
             gs = torch.stack(gs).squeeze() # global acoustic styles
             s_trg = torch.cat([gs, s_dur], dim=-1).detach() # ground truth for denoiser
 
+            print("computing bert")
             bert_dur = model.bert(texts, attention_mask=(~text_mask).int())
             d_en = model.bert_encoder(bert_dur).transpose(-1, -2) 
             
+            print("denoiser trianing")
             # denoiser training
             if epoch >= diff_epoch:
                 num_steps = np.random.randint(3, 5)
@@ -372,7 +402,7 @@ def main(config_path):
                 
             s_loss = 0
             
-
+            print("model predictor")
             d, p = model.predictor(d_en, s_dur, 
                                                     input_lengths, 
                                                     s2s_attn_mono, 
@@ -412,7 +442,9 @@ def main(config_path):
             if gt.size(-1) < 80:
                 continue
             
-            s = model.style_encoder(gt.unsqueeze(1))           
+            print("style encoder")
+            s = model.style_encoder(gt.unsqueeze(1))    
+            print("predictor encoder")       
             s_dur = model.predictor_encoder(gt.unsqueeze(1))
                 
             with torch.no_grad():
@@ -432,7 +464,8 @@ def main(config_path):
 
             loss_F0_rec =  (F.smooth_l1_loss(F0_real, F0_fake)) / 10
             loss_norm_rec = F.smooth_l1_loss(N_real, N_fake)
-
+            
+            print("computing loss")
             optimizer.zero_grad()
             d_loss = dl(wav.detach(), y_rec.detach()).mean()
             d_loss.backward()
@@ -501,6 +534,7 @@ def main(config_path):
             if epoch >= diff_epoch:
                 optimizer.step('diffusion')
 
+            print("slm loss")
             d_loss_slm, loss_gen_lm = 0, 0
             if epoch >= joint_epoch:
                 # randomly pick whether to use in-distribution text

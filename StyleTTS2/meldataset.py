@@ -103,43 +103,50 @@ class FilePathDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.data_list)
 
-    def __getitem__(self, idx):   
-        data = self.data_list[idx]
-        path = data[0]
-        
-        wave, text_tensor, speaker_id, utterance_name = self._load_tensor(data)
-        
-        mel_tensor = preprocess(wave).squeeze()
-        
-        acoustic_feature = mel_tensor.squeeze()
-        length_feature = acoustic_feature.size(1)
-        acoustic_feature = acoustic_feature[:, :(length_feature - length_feature % 2)]
-        
-        # get reference sample
-        ref_data = (self.df[self.df[2] == str(speaker_id)]).sample(n=1).iloc[0].tolist()
-        ref_mel_tensor, ref_label = self._load_data(ref_data[:3])
-        
-        # get OOD text
-        
-        ps = ""
-        
-        while len(ps) < self.min_length:
-            rand_idx = np.random.randint(0, len(self.ptexts) - 1)
-            ps = self.ptexts[rand_idx]
-            
-            text = self.text_cleaner(ps)
-            text.insert(0, 0)
-            text.append(0)
+    def __getitem__(self, idx):
+        # Retry with a random sample if a file can't be loaded
+        for _ in range(10):
+            try:
+                data = self.data_list[idx]
+                path = data[0]
 
-            ref_text = torch.LongTensor(text)
- 
-        return speaker_id, utterance_name, acoustic_feature, text_tensor, ref_text, ref_mel_tensor, ref_label, path, wave
+                wave, text_tensor, speaker_id, utterance_name = self._load_tensor(data)
+
+                mel_tensor = preprocess(wave).squeeze()
+
+                acoustic_feature = mel_tensor.squeeze()
+                length_feature = acoustic_feature.size(1)
+                acoustic_feature = acoustic_feature[:, :(length_feature - length_feature % 2)]
+
+                # get reference sample
+                ref_data = (self.df[self.df[2] == str(speaker_id)]).sample(n=1).iloc[0].tolist()
+                ref_mel_tensor, ref_label = self._load_data(ref_data[:3])
+
+                # get OOD text
+                ps = ""
+                while len(ps) < self.min_length:
+                    rand_idx = np.random.randint(0, len(self.ptexts) - 1)
+                    ps = self.ptexts[rand_idx]
+
+                    text = self.text_cleaner(ps)
+                    text.insert(0, 0)
+                    text.append(0)
+                    ref_text = torch.LongTensor(text)
+
+                return speaker_id, utterance_name, acoustic_feature, text_tensor, ref_text, ref_mel_tensor, ref_label, path, wave
+
+            except Exception as e:
+                logger.warning(f"Skipping {self.data_list[idx][0]}: {e}")
+                idx = np.random.randint(0, len(self.data_list) - 1)
+
+        raise RuntimeError(f"Failed to load a valid sample after 10 retries")
 
     def _load_tensor(self, data):
         wave_path, text, speaker_id = data
         utterance_name = osp.splitext(osp.basename(wave_path))[0]
         speaker_id = osp.basename(osp.dirname(wave_path))
-        
+        print(f"read wave path {wave_path}")
+        print(f"read wave path {self.root_path}")
         wave, sr = sf.read(osp.join(self.root_path, wave_path))
         if wave.shape[-1] == 2:
             wave = wave[:, 0].squeeze()

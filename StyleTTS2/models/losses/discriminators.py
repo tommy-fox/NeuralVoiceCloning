@@ -15,16 +15,16 @@ def stft(x, fft_size, hop_size, win_length, window):
         fft_size (int): FFT size.
         hop_size (int): Hop size.
         win_length (int): Window length.
-        window (str): Window function type.
+        window (Tensor): Window function tensor.
     Returns:
         Tensor: Magnitude spectrogram (B, #frames, fft_size // 2 + 1).
     """
     x_stft = torch.stft(x, fft_size, hop_size, win_length, window,
-            return_complex=True)
+            return_complex=False)
     real = x_stft[..., 0]
     imag = x_stft[..., 1]
 
-    return torch.abs(x_stft).transpose(2, 1)
+    return torch.sqrt(real ** 2 + imag ** 2 + 1e-9).transpose(2, 1)
 
 class SpecDiscriminator(nn.Module):
     """docstring for Discriminator."""
@@ -35,7 +35,7 @@ class SpecDiscriminator(nn.Module):
         self.fft_size = fft_size
         self.shift_size = shift_size
         self.win_length = win_length
-        self.window = getattr(torch, window)(win_length)
+        self.register_buffer('window', getattr(torch, window)(win_length))
         self.discriminators = nn.ModuleList([
             norm_f(nn.Conv2d(1, 32, kernel_size=(3, 9), padding=(1, 4))),
             norm_f(nn.Conv2d(32, 32, kernel_size=(3, 9), stride=(1,2), padding=(1, 4))),
@@ -50,7 +50,7 @@ class SpecDiscriminator(nn.Module):
 
         fmap = []
         y = y.squeeze(1)
-        y = stft(y, self.fft_size, self.shift_size, self.win_length, self.window.to(y.get_device()))
+        y = stft(y, self.fft_size, self.shift_size, self.win_length, self.window)
         y = y.unsqueeze(1)
         for i, d in enumerate(self.discriminators):
             y = d(y)

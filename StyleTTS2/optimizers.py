@@ -34,7 +34,8 @@ class MultiOptimizer:
     def _step(self, key, scaler=None):
         if scaler is not None:
             scaler.step(self.optimizers[key])
-            scaler.update()
+            # NOTE: do NOT call scaler.update() here — it must be called
+            # once per backward pass, after ALL sub-optimizer steps finish.
         else:
             self.optimizers[key].step()
 

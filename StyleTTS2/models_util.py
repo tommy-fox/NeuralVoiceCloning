@@ -601,7 +601,7 @@ def load_ASR_models(ASR_MODEL_PATH, ASR_MODEL_CONFIG):
 
     def _load_model(model_config, model_path):
         model = ASRCNN(**model_config)
-        params = torch.load(model_path, map_location='cpu', weights_only=False)['model']
+        params = torch.load(model_path, map_location='cpu')['model']
         model.load_state_dict(params)
         return model
 
@@ -698,12 +698,22 @@ def load_checkpoint(model, optimizer, path, load_only_params=True, ignore_module
     params = state['net']
 
     for key in model:
-        if key == 'decoder':
-            print(f"Skipping loading weights for {key} due to architecture mismatch")
-            continue
         if key in params and key not in ignore_modules:
-            print(f'{key} loaded')
-            model[key].load_state_dict(params[key], strict=False)
+            try:
+                model[key].load_state_dict(params[key], strict=False)
+                print(f'{key} loaded')
+            except RuntimeError as e:
+                print(f"Warning: could not load weights for {key}: {e}")
+                # Try loading only matching keys as a fallback
+                try:
+                    model_state = model[key].state_dict()
+                    pretrained_state = {k: v for k, v in params[key].items()
+                                        if k in model_state and v.shape == model_state[k].shape}
+                    model_state.update(pretrained_state)
+                    model[key].load_state_dict(model_state)
+                    print(f'{key} partially loaded ({len(pretrained_state)}/{len(params[key])} params matched)')
+                except Exception as e2:
+                    print(f"Warning: fallback partial load also failed for {key}: {e2}")
 
     _ = [model[key].eval() for key in model]
     
